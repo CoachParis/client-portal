@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The SISS Client Portal™</title>
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js"></script>
+    <!-- Firebase COMPAT SDKs (required for namespace syntax) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --primary: #734A5A;
@@ -38,7 +35,7 @@
             line-height: 1.6;
         }
 
-        /* AUTH SCREENS */
+        /* ===== AUTH SCREEN ===== */
         .auth-container {
             display: flex;
             height: 100vh;
@@ -47,17 +44,17 @@
 
         .auth-box {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             margin: auto;
             background: white;
             border-radius: 16px;
-            padding: 40px;
+            padding: 44px 36px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .auth-header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 36px;
         }
 
         .logo {
@@ -65,7 +62,7 @@
             font-size: 26px;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             letter-spacing: 0.5px;
         }
 
@@ -73,31 +70,36 @@
             color: var(--text-secondary);
             font-size: 13px;
             line-height: 1.5;
-            max-width: 320px;
+            max-width: 340px;
             margin: 0 auto;
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
+            color: var(--text-primary);
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 14px;
+            font-family: inherit;
             transition: border-color 0.3s;
+            background: white;
         }
 
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(115, 74, 90, 0.1);
@@ -105,13 +107,18 @@
 
         .btn {
             width: 100%;
-            padding: 12px 16px;
+            padding: 13px 16px;
             border: none;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .btn-primary {
@@ -121,8 +128,15 @@
 
         .btn-primary:hover {
             background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(115, 74, 90, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(115, 74, 90, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-secondary {
@@ -141,111 +155,171 @@
             width: auto;
             padding: 8px 16px;
             font-size: 12px;
+            border-radius: 6px;
         }
 
-        .error-message {
-            background-color: #FFEBEE;
-            color: var(--error);
-            padding: 12px;
+        .btn-logout:hover {
+            background-color: #D32F2F;
+        }
+
+        .msg {
+            padding: 12px 16px;
             border-radius: 8px;
             margin-bottom: 16px;
-            font-size: 14px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .msg.error {
+            background-color: #FFEBEE;
+            color: var(--error);
             border-left: 4px solid var(--error);
         }
 
-        .success-message {
+        .msg.success {
             background-color: #E8F5E9;
             color: var(--success);
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 14px;
             border-left: 4px solid var(--success);
         }
 
-        .auth-toggle {
-            text-align: center;
-            margin-top: 20px;
+        .msg.visible {
+            display: block;
         }
 
-        .auth-toggle p {
-            font-size: 14px;
-            color: var(--text-secondary);
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
         }
 
-        .auth-toggle button {
-            background: none;
-            border: none;
-            color: var(--primary);
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: underline;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
+        .hidden { display: none !important; }
 
-        /* DASHBOARD SCREENS */
+        /* ===== DASHBOARD ===== */
         .dashboard-container {
             display: none;
             height: 100vh;
+            flex-direction: column;
             background-color: var(--bg-light);
         }
 
         .dashboard-container.active {
             display: flex;
-            flex-direction: column;
         }
 
         .dashboard-header {
             background-color: white;
             border-bottom: 1px solid var(--border);
-            padding: 20px 30px;
+            padding: 16px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        .header-left {
+            display: flex;
+            flex-direction: column;
+        }
+
         .header-title {
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--primary);
         }
 
-        .header-user {
+        .header-subtitle {
+            font-size: 11px;
+            color: var(--accent);
+            margin-top: 2px;
+        }
+
+        .header-right {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
+        }
+
+        .user-info {
+            text-align: right;
         }
 
         .user-email {
+            font-size: 13px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--accent);
+        }
+
+        .session-bar {
+            background: linear-gradient(135deg, #FFF3E0, #FFF8E1);
+            border-bottom: 1px solid #FFE0B2;
+            padding: 8px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #E65100;
+        }
+
+        .session-bar .timer {
+            font-weight: 700;
             font-size: 14px;
-            color: var(--text-secondary);
         }
 
         .dashboard-main {
             flex: 1;
             overflow-y: auto;
-            padding: 30px;
+            padding: 28px;
         }
 
-        .dashboard-card {
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .welcome-banner h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .welcome-banner p {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .card {
             background-color: white;
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0,0,0,0.04);
         }
 
         .card-title {
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--primary);
+            margin-bottom: 14px;
+            color: var(--primary-dark);
         }
 
         .card-content {
@@ -254,80 +328,102 @@
             line-height: 1.8;
         }
 
+        .card-content ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        .card-content li {
+            margin-bottom: 6px;
+        }
+
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 14px;
             margin-top: 12px;
         }
 
         .info-box {
             background-color: var(--bg-medium);
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px;
+            border-radius: 10px;
             text-align: center;
         }
 
         .info-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .info-value {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
         }
 
-        .hidden {
-            display: none !important;
+        .info-value.green { color: var(--success); }
+
+        .status-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
         }
 
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .status-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--bg-medium);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .status-list li:last-child {
+            border-bottom: none;
         }
 
-        .session-info {
-            background-color: #FFF3E0;
-            border-left: 4px solid #FF9800;
-            padding: 12px;
-            border-radius: 4px;
+        .status-badge {
             font-size: 12px;
-            margin-bottom: 16px;
-        }
-
-        .session-time {
-            color: #E65100;
             font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
         }
 
-        @media (max-width: 768px) {
+        .status-badge.active {
+            background-color: #E8F5E9;
+            color: var(--success);
+        }
+
+        .status-badge.pending {
+            background-color: #FFF3E0;
+            color: var(--warning);
+        }
+
+        @media (max-width: 600px) {
             .auth-box {
                 max-width: 100%;
                 border-radius: 0;
                 padding: 30px 20px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
             }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
+            .info-grid { grid-template-columns: 1fr; }
+            .dashboard-header { padding: 14px 16px; }
+            .dashboard-main { padding: 16px; }
+            .session-bar { padding: 8px 16px; }
+            .header-title { font-size: 17px; }
         }
     </style>
 </head>
 <body>
-    <!-- AUTH SCREENS -->
+
+    <!-- ==================== AUTH SCREEN ==================== -->
     <div id="authScreen" class="auth-container">
         <div class="auth-box">
             <div class="auth-header">
@@ -335,11 +431,10 @@
                 <div class="tagline">Your private hub for capacity-based training, tracking, and guided progression.</div>
             </div>
 
-            <div id="errorMessage" class="error-message hidden"></div>
-            <div id="successMessage" class="success-message hidden"></div>
+            <div id="msgBox" class="msg"></div>
 
-            <!-- Login Form -->
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <!-- LOGIN FORM -->
+            <div id="loginForm">
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" id="loginEmail" required placeholder="your@email.com">
@@ -348,142 +443,105 @@
                     <label>Password</label>
                     <input type="password" id="loginPassword" required placeholder="••••••••">
                 </div>
-                <button type="submit" class="btn btn-primary" id="loginBtn">
-                    <span id="loginBtnText">Login</span>
-                    <span id="loginSpinner" class="spinner hidden" style="margin-left: 8px;"></span>
-                </button>
-                <button type="button" class="btn btn-secondary" onclick="toggleToSignup()">
-                    Don't have an account? Sign up
-                </button>
-            </form>
+                <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">Login</button>
+                <button class="btn btn-secondary" onclick="showForm('signup')">Don't have an account? Sign up</button>
+            </div>
 
-            <!-- Signup Form -->
-            <form id="signupForm" class="hidden" onsubmit="handleSignup(event)">
+            <!-- SIGNUP FORM -->
+            <div id="signupForm" class="hidden">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" id="signupName" required placeholder="Your Name">
+                    <input type="text" id="signupName" required placeholder="Your full name">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" id="signupEmail" required placeholder="your@email.com">
                 </div>
                 <div class="form-group">
-                    <label>Password</label>
+                    <label>Password (6+ characters)</label>
                     <input type="password" id="signupPassword" required placeholder="••••••••" minlength="6">
                 </div>
                 <div class="form-group">
                     <label>Account Type</label>
-                    <select id="accountType" style="width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px;">
+                    <select id="signupRole">
                         <option value="client">Client</option>
                         <option value="coach">Coach</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" id="signupBtn">
-                    <span id="signupBtnText">Create Account</span>
-                    <span id="signupSpinner" class="spinner hidden" style="margin-left: 8px;"></span>
-                </button>
-                <button type="button" class="btn btn-secondary" onclick="toggleToSignup()">
-                    Already have an account? Login
-                </button>
-            </form>
+                <button class="btn btn-primary" id="signupBtn" onclick="handleSignup()">Create Account</button>
+                <button class="btn btn-secondary" onclick="showForm('login')">Already have an account? Login</button>
+            </div>
         </div>
     </div>
 
-    <!-- DASHBOARD SCREENS -->
-    <div id="dashboardContainer" class="dashboard-container">
+    <!-- ==================== DASHBOARD ==================== -->
+    <div id="dashboard" class="dashboard-container">
         <div class="dashboard-header">
-            <div class="header-title" id="dashboardTitle">The SISS Client Portal™</div>
-            <div class="header-user">
-                <div>
-                    <div class="user-email" id="userEmail">loading...</div>
-                    <div style="font-size: 11px; color: var(--text-secondary);" id="accountType">Coach</div>
+            <div class="header-left">
+                <div class="header-title" id="dashTitle">The SISS Client Portal™</div>
+                <div class="header-subtitle">Capacity-Based Training & Guided Progression</div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-email" id="dispEmail">—</div>
+                    <div class="user-role" id="dispRole">—</div>
                 </div>
                 <button class="btn btn-logout" onclick="handleLogout()">Logout</button>
             </div>
         </div>
 
+        <div class="session-bar">
+            <span>Session auto-logout in:</span>
+            <span class="timer" id="timerDisplay">02:00:00</span>
+        </div>
+
         <div class="dashboard-main">
-            <div id="sessionInfo" class="session-info">
-                Session expires in: <span class="session-time" id="sessionTimer">--:--</span>
-            </div>
 
-            <!-- Coach Dashboard -->
-            <div id="coachDashboard">
-                <div class="dashboard-card">
-                    <div class="card-title">Welcome, Coach!</div>
+            <!-- ===== COACH VIEW ===== -->
+            <div id="coachView" class="hidden">
+                <div class="welcome-banner">
+                    <h2>Welcome Back, Coach</h2>
+                    <p>Your premium coaching platform is live. Create workouts, schedule sessions, and track your clients — all from here.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Platform Status</div>
+                    <ul class="status-list">
+                        <li>Firebase Authentication <span class="status-badge active">Active</span></li>
+                        <li>Firestore Database <span class="status-badge active">Connected</span></li>
+                        <li>Session Duration <span class="status-badge active">2 Hours</span></li>
+                        <li>Device Limit <span class="status-badge active">1 Device</span></li>
+                        <li>Account Sharing <span class="status-badge active">Blocked</span></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Coming in Session 2</div>
                     <div class="card-content">
-                        Your premium coaching platform is ready. You can now:
-                        <ul style="margin-left: 20px; margin-top: 12px;">
-                            <li>Create customized 12-week programs</li>
-                            <li>Schedule workouts for clients (15-minute increments)</li>
-                            <li>Track client progress in real-time</li>
-                            <li>Send personalized coaching notes</li>
-                            <li>Manage client schedules and access</li>
+                        <ul>
+                            <li>Client day/time selection (15-min increments)</li>
+                            <li>Workout creation with exercises + videos</li>
+                            <li>Coach notes per session</li>
+                            <li>Schedule Tab (upcoming sessions)</li>
+                            <li>Program Tab (completed history)</li>
+                            <li>Real-time sync across devices</li>
                         </ul>
-                    </div>
-                </div>
-
-                <div class="dashboard-card">
-                    <div class="card-title">System Status</div>
-                    <div class="info-grid">
-                        <div class="info-box">
-                            <div class="info-label">Firebase Auth</div>
-                            <div class="info-value">✓ Active</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-label">Session Duration</div>
-                            <div class="info-value">2 Hours</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-label">Device Limit</div>
-                            <div class="info-value">1 Device</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-label">Auto-Logout</div>
-                            <div class="info-value">Enabled</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-card">
-                    <div class="card-title">Next Steps</div>
-                    <div class="card-content">
-                        <strong>Phase 2 Session 1 Complete:</strong><br>
-                        ✓ Firebase Authentication (Coach/Client)<br>
-                        ✓ 2-Hour Auto-Logout System<br>
-                        ✓ 1-Device Limit<br>
-                        ✓ Firestore Collections Setup<br>
-                        ✓ Security Rules<br>
-                        <br>
-                        <strong>Coming Next (Session 2):</strong><br>
-                        → Client scheduling (days + times)<br>
-                        → Schedule Tab (upcoming sessions)<br>
-                        → Program Tab (completed history)<br>
                     </div>
                 </div>
             </div>
 
-            <!-- Client Dashboard -->
-            <div id="clientDashboard" class="hidden">
-                <div class="dashboard-card">
-                    <div class="card-title">Welcome to Your Coaching Program!</div>
-                    <div class="card-content">
-                        Your personalized 12-week coaching journey starts here. Features coming soon:
-                        <ul style="margin-left: 20px; margin-top: 12px;">
-                            <li>Select your training days and times</li>
-                            <li>View your customized workout schedule</li>
-                            <li>Log your progress and strength gains</li>
-                            <li>Track measurements and photos</li>
-                            <li>Message your coach directly</li>
-                        </ul>
-                    </div>
+            <!-- ===== CLIENT VIEW ===== -->
+            <div id="clientView" class="hidden">
+                <div class="welcome-banner">
+                    <h2>Welcome to Your Program</h2>
+                    <p>Your personalized coaching journey starts here. Select your training days and your coach will build customized workouts just for you.</p>
                 </div>
 
-                <div class="dashboard-card">
-                    <div class="card-title">Your Program Status</div>
+                <div class="card">
+                    <div class="card-title">Your Program Overview</div>
                     <div class="info-grid">
                         <div class="info-box">
-                            <div class="info-label">Program Length</div>
+                            <div class="info-label">Program</div>
                             <div class="info-value">12 Weeks</div>
                         </div>
                         <div class="info-box">
@@ -496,29 +554,41 @@
                         </div>
                         <div class="info-box">
                             <div class="info-label">Status</div>
-                            <div class="info-value">Active</div>
+                            <div class="info-value green">Active</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="dashboard-card">
-                    <div class="card-title">What's Next</div>
+                <div class="card">
+                    <div class="card-title">Your Coach's Policies</div>
+                    <ul class="status-list">
+                        <li>Weekday Response Time <span class="status-badge active">2-4 Hours</span></li>
+                        <li>Weekend Response Time <span class="status-badge pending">12-24 Hours</span></li>
+                        <li>Communication <span class="status-badge active">In-App Only</span></li>
+                        <li>Phone Access <span class="status-badge" style="background:#FFEBEE;color:#F44336;">Not Available</span></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">What's Coming Next</div>
                     <div class="card-content">
-                        <strong>Select your training schedule:</strong><br>
-                        In the next update, you'll select which days and times work best for you (15-minute increments). Your coach will then build your customized workouts for those days.<br>
-                        <br>
-                        <strong>Your tabs:</strong><br>
-                        • <strong>Schedule:</strong> See upcoming workouts<br>
-                        • <strong>Program:</strong> View completed workout history<br>
-                        • <strong>Messages:</strong> Chat with your coach<br>
+                        <ul>
+                            <li>Select your training days and times</li>
+                            <li>View your customized workout schedule</li>
+                            <li>Log your progress and strength gains</li>
+                            <li>Track measurements and photos</li>
+                            <li>Message your coach directly</li>
+                        </ul>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
-        // Firebase Config
+        // ===== FIREBASE INIT =====
         const firebaseConfig = {
             apiKey: "AIzaSyCpF4ykT6BCmfNXTR-o5fsdwMqmsLO5VDA",
             authDomain: "rebuild-and-rise.firebaseapp.com",
@@ -528,218 +598,238 @@
             appId: "1:87951065832:web:840c590cfa0580600b3f5d"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Session Management
-        const SESSION_DURATION = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
-        let sessionTimer = null;
-        let lastActivityTime = null;
+        // ===== SESSION CONFIG =====
+        const SESSION_MS = 2 * 60 * 60 * 1000; // 2 hours
+        let lastActivity = Date.now();
+        let timerInterval = null;
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    showDashboard(user);
-                } else {
-                    showAuthScreen();
+        // ===== DEVICE ID =====
+        function getDeviceId() {
+            let id = localStorage.getItem('siss_device_id');
+            if (!id) {
+                id = 'dev_' + Math.random().toString(36).substr(2, 12) + '_' + Date.now();
+                localStorage.setItem('siss_device_id', id);
+            }
+            return id;
+        }
+
+        // ===== AUTH STATE LISTENER =====
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                try {
+                    const doc = await db.collection('users').doc(user.uid).get();
+                    if (doc.exists) {
+                        showDashboard(user, doc.data());
+                    } else {
+                        // User exists in Auth but not Firestore (edge case)
+                        showDashboard(user, { accountType: 'client', name: '', email: user.email });
+                    }
+                } catch (err) {
+                    console.error('Firestore read error:', err);
+                    showDashboard(user, { accountType: 'client', name: '', email: user.email });
                 }
-            });
+            } else {
+                showAuth();
+            }
         });
 
-        // Auth Functions
-        function toggleToSignup() {
-            document.getElementById('loginForm').classList.toggle('hidden');
-            document.getElementById('signupForm').classList.toggle('hidden');
-            clearMessages();
+        // ===== FORM TOGGLING =====
+        function showForm(type) {
+            document.getElementById('loginForm').classList.toggle('hidden', type !== 'login');
+            document.getElementById('signupForm').classList.toggle('hidden', type !== 'signup');
+            hideMsg();
         }
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
+        // ===== LOGIN =====
+        async function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
-            
-            setLoading(true, 'login');
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .then(async (userCredential) => {
-                    // Check for existing session (1-device limit)
-                    const deviceId = getDeviceId();
-                    const userDoc = await db.collection('users').doc(userCredential.user.uid).get();
-                    
-                    if (userDoc.exists) {
-                        const lastDevice = userDoc.data().lastDeviceId;
-                        if (lastDevice && lastDevice !== deviceId) {
-                            console.log('Device changed - existing session ended');
-                        }
-                    }
-                    
-                    // Update user's last login device
-                    await db.collection('users').doc(userCredential.user.uid).set({
-                        email: userCredential.user.email,
-                        lastDeviceId: deviceId,
-                        lastLoginTime: firebase.firestore.FieldValue.serverTimestamp(),
-                        sessionExpiry: new Date(Date.now() + SESSION_DURATION)
-                    }, { merge: true });
-                    
-                    showSuccess('Login successful!');
-                    setLoading(false, 'login');
-                })
-                .catch(error => {
-                    showError('Login failed: ' + error.message);
-                    setLoading(false, 'login');
-                });
+
+            if (!email || !password) {
+                showMsg('Please enter your email and password.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Logging in...';
+
+            try {
+                const cred = await auth.signInWithEmailAndPassword(email, password);
+
+                // Update device tracking
+                await db.collection('users').doc(cred.user.uid).set({
+                    lastDeviceId: getDeviceId(),
+                    lastLoginTime: firebase.firestore.FieldValue.serverTimestamp(),
+                    sessionExpiry: new Date(Date.now() + SESSION_MS)
+                }, { merge: true });
+
+            } catch (err) {
+                let msg = 'Login failed. ';
+                if (err.code === 'auth/user-not-found') msg += 'No account found with that email.';
+                else if (err.code === 'auth/wrong-password') msg += 'Incorrect password.';
+                else if (err.code === 'auth/invalid-credential') msg += 'Invalid email or password.';
+                else if (err.code === 'auth/too-many-requests') msg += 'Too many attempts. Try again later.';
+                else msg += err.message;
+                showMsg(msg, 'error');
+
+                btn.disabled = false;
+                btn.innerHTML = 'Login';
+            }
         }
 
-        function handleSignup(e) {
-            e.preventDefault();
-            const email = document.getElementById('signupEmail').value;
+        // ===== SIGNUP =====
+        async function handleSignup() {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
             const password = document.getElementById('signupPassword').value;
-            const name = document.getElementById('signupName').value;
-            const accountType = document.getElementById('accountType').value;
-            
-            setLoading(true, 'signup');
-            
-            auth.createUserWithEmailAndPassword(email, password)
-                .then(async (userCredential) => {
-                    const deviceId = getDeviceId();
-                    
-                    // Create user document
-                    await db.collection('users').doc(userCredential.user.uid).set({
-                        email: email,
-                        name: name,
-                        accountType: accountType,
-                        lastDeviceId: deviceId,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastLoginTime: firebase.firestore.FieldValue.serverTimestamp(),
-                        sessionExpiry: new Date(Date.now() + SESSION_DURATION)
-                    });
-                    
-                    showSuccess('Account created! Logging in...');
-                    setLoading(false, 'signup');
-                })
-                .catch(error => {
-                    showError('Signup failed: ' + error.message);
-                    setLoading(false, 'signup');
+            const role = document.getElementById('signupRole').value;
+
+            if (!name || !email || !password) {
+                showMsg('Please fill in all fields.', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                showMsg('Password must be at least 6 characters.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('signupBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(email, password);
+
+                // Create Firestore user document
+                await db.collection('users').doc(cred.user.uid).set({
+                    email: email,
+                    name: name,
+                    accountType: role,
+                    lastDeviceId: getDeviceId(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLoginTime: firebase.firestore.FieldValue.serverTimestamp(),
+                    sessionExpiry: new Date(Date.now() + SESSION_MS)
                 });
+
+                // onAuthStateChanged will handle the redirect
+
+            } catch (err) {
+                let msg = 'Signup failed. ';
+                if (err.code === 'auth/email-already-in-use') msg += 'An account with this email already exists.';
+                else if (err.code === 'auth/weak-password') msg += 'Password is too weak (6+ characters required).';
+                else if (err.code === 'auth/invalid-email') msg += 'Please enter a valid email address.';
+                else msg += err.message;
+                showMsg(msg, 'error');
+
+                btn.disabled = false;
+                btn.innerHTML = 'Create Account';
+            }
         }
 
+        // ===== LOGOUT =====
         function handleLogout() {
-            auth.signOut().then(() => {
-                showAuthScreen();
-                clearMessages();
-            });
+            if (timerInterval) clearInterval(timerInterval);
+            auth.signOut();
         }
 
-        // Display Functions
-        function showAuthScreen() {
+        // ===== SHOW SCREENS =====
+        function showAuth() {
             document.getElementById('authScreen').style.display = 'flex';
-            document.getElementById('dashboardContainer').classList.remove('active');
+            document.getElementById('dashboard').classList.remove('active');
+            // Reset buttons
+            const lb = document.getElementById('loginBtn');
+            const sb = document.getElementById('signupBtn');
+            if (lb) { lb.disabled = false; lb.innerHTML = 'Login'; }
+            if (sb) { sb.disabled = false; sb.innerHTML = 'Create Account'; }
+            showForm('login');
+            hideMsg();
         }
 
-        function showDashboard(user) {
+        function showDashboard(user, data) {
             document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('dashboardContainer').classList.add('active');
-            document.getElementById('userEmail').textContent = user.email;
-            
-            // Fetch user data
-            db.collection('users').doc(user.uid).get().then(doc => {
-                if (doc.exists) {
-                    const userData = doc.data();
-                    document.getElementById('accountType').textContent = userData.accountType === 'coach' ? 'Coach' : 'Client';
-                    document.getElementById('dashboardTitle').textContent = userData.accountType === 'coach' ? 'SISS Portal — Coach View' : 'SISS Portal — My Dashboard';
-                    
-                    if (userData.accountType === 'coach') {
-                        document.getElementById('coachDashboard').classList.remove('hidden');
-                        document.getElementById('clientDashboard').classList.add('hidden');
-                    } else {
-                        document.getElementById('coachDashboard').classList.add('hidden');
-                        document.getElementById('clientDashboard').classList.remove('hidden');
-                    }
-                }
-            });
-            
+            document.getElementById('dashboard').classList.add('active');
+
+            // Set user info
+            document.getElementById('dispEmail').textContent = user.email;
+            const isCoach = data.accountType === 'coach';
+            document.getElementById('dispRole').textContent = isCoach ? 'Coach' : 'Client';
+            document.getElementById('dashTitle').textContent = isCoach
+                ? 'SISS Portal — Coach View'
+                : 'SISS Portal — My Dashboard';
+
+            // Show correct view
+            document.getElementById('coachView').classList.toggle('hidden', !isCoach);
+            document.getElementById('clientView').classList.toggle('hidden', isCoach);
+
+            // Start session timer
             startSessionTimer();
         }
 
-        // Session Management
+        // ===== SESSION TIMER =====
         function startSessionTimer() {
-            lastActivityTime = Date.now();
-            updateSessionDisplay();
-            
-            if (sessionTimer) clearInterval(sessionTimer);
-            sessionTimer = setInterval(() => {
-                updateSessionDisplay();
-                
-                const timeSinceLastActivity = Date.now() - lastActivityTime;
-                if (timeSinceLastActivity > SESSION_DURATION) {
+            lastActivity = Date.now();
+
+            // Track user activity
+            ['click', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+                document.addEventListener(evt, () => { lastActivity = Date.now(); }, { passive: true });
+            });
+
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                const elapsed = Date.now() - lastActivity;
+                const remaining = Math.max(0, SESSION_MS - elapsed);
+
+                const h = Math.floor(remaining / 3600000);
+                const m = Math.floor((remaining % 3600000) / 60000);
+                const s = Math.floor((remaining % 60000) / 1000);
+                document.getElementById('timerDisplay').textContent =
+                    `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+                // Auto-logout
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
                     handleLogout();
-                    showError('Session expired. Please login again.');
+                    setTimeout(() => showMsg('Session expired due to inactivity. Please log in again.', 'error'), 500);
+                }
+
+                // Warning at 5 minutes
+                const bar = document.querySelector('.session-bar');
+                if (remaining < 300000) {
+                    bar.style.background = 'linear-gradient(135deg, #FFEBEE, #FFCDD2)';
+                    bar.style.borderColor = '#EF9A9A';
+                    bar.style.color = '#C62828';
+                } else {
+                    bar.style.background = '';
+                    bar.style.borderColor = '';
+                    bar.style.color = '';
                 }
             }, 1000);
-            
-            // Track activity
-            document.addEventListener('click', () => {
-                lastActivityTime = Date.now();
-            });
-            document.addEventListener('keypress', () => {
-                lastActivityTime = Date.now();
-            });
         }
 
-        function updateSessionDisplay() {
-            const timeRemaining = SESSION_DURATION - (Date.now() - lastActivityTime);
-            const minutes = Math.floor(timeRemaining / 60000);
-            const seconds = Math.floor((timeRemaining % 60000) / 1000);
-            document.getElementById('sessionTimer').textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        // ===== MESSAGES =====
+        function showMsg(text, type) {
+            const box = document.getElementById('msgBox');
+            box.textContent = text;
+            box.className = 'msg ' + type + ' visible';
         }
 
-        function getDeviceId() {
-            let deviceId = localStorage.getItem('deviceId');
-            if (!deviceId) {
-                deviceId = 'device_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('deviceId', deviceId);
+        function hideMsg() {
+            document.getElementById('msgBox').className = 'msg';
+        }
+
+        // ===== ENTER KEY SUPPORT =====
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const loginVisible = !document.getElementById('loginForm').classList.contains('hidden');
+                if (loginVisible) handleLogin();
+                else handleSignup();
             }
-            return deviceId;
-        }
-
-        // UI Functions
-        function setLoading(loading, type) {
-            const btn = document.getElementById(type + 'Btn');
-            const spinner = document.getElementById(type + 'Spinner');
-            const text = document.getElementById(type + 'BtnText');
-            
-            if (loading) {
-                btn.classList.add('loading');
-                spinner.classList.remove('hidden');
-                text.textContent = type === 'login' ? 'Logging in...' : 'Creating account...';
-            } else {
-                btn.classList.remove('loading');
-                spinner.classList.add('hidden');
-                text.textContent = type === 'login' ? 'Login' : 'Create Account';
-            }
-        }
-
-        function showError(message) {
-            const elem = document.getElementById('errorMessage');
-            elem.textContent = message;
-            elem.classList.remove('hidden');
-            setTimeout(() => elem.classList.add('hidden'), 5000);
-        }
-
-        function showSuccess(message) {
-            const elem = document.getElementById('successMessage');
-            elem.textContent = message;
-            elem.classList.remove('hidden');
-            setTimeout(() => elem.classList.add('hidden'), 5000);
-        }
-
-        function clearMessages() {
-            document.getElementById('errorMessage').classList.add('hidden');
-            document.getElementById('successMessage').classList.add('hidden');
-        }
+        });
     </script>
 </body>
 </html>
