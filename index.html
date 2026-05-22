@@ -245,8 +245,28 @@ function devId(){let i=localStorage.getItem('siss_dev');if(!i){i='d_'+Math.rando
 // ===== AUTH LISTENER =====
 auth.onAuthStateChanged(async u=>{
     if(u){
-        try{const d=await db.collection('users').doc(u.uid).get();CUR_USER=u;CUR_DATA=d.exists?d.data():{accountType:'client',name:'',email:u.email};showShell()}
-        catch(e){CUR_USER=u;CUR_DATA={accountType:'client',name:'',email:u.email};showShell()}
+        try{
+            console.log('Auth user:', u.uid, u.email);
+            const d=await db.collection('users').doc(u.uid).get();
+            console.log('Firestore doc exists:', d.exists);
+            if(d.exists){
+                console.log('User data:', JSON.stringify(d.data()));
+                CUR_USER=u;
+                CUR_DATA=d.data();
+            }else{
+                console.log('No Firestore doc found, creating one...');
+                CUR_USER=u;
+                CUR_DATA={accountType:'client',name:'',email:u.email};
+            }
+            showShell();
+        }
+        catch(e){
+            console.error('Firestore read error:', e);
+            // If we can't read Firestore, check localStorage for role
+            CUR_USER=u;
+            CUR_DATA={accountType:'client',name:'',email:u.email};
+            showShell();
+        }
     }else{showAuth()}
 });
 
