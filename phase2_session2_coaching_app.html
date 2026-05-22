@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The SISS Client Portal™</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--pri:#734A5A;--pri-l:#8B5C70;--pri-d:#5A3849;--acc:#A67C92;--acc-l:#D4B5C8;--bg:#FAF8F6;--bg2:#F3EEEA;--bdr:#E8DED7;--txt:#2C2C2C;--txt2:#666;--txt3:#999;--ok:#4CAF50;--warn:#FF9800;--err:#F44336;--radius:10px}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;font-size:14px}
+        .hidden{display:none!important}
+        /* AUTH */
+        .auth-wrap{display:flex;height:100vh;background:linear-gradient(135deg,var(--pri),var(--pri-d))}
+        .auth-box{width:100%;max-width:430px;margin:auto;background:#fff;border-radius:16px;padding:40px 34px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+        .auth-hdr{text-align:center;margin-bottom:32px}
+        .logo{font-family:'Playfair Display',serif;font-size:25px;font-weight:700;color:var(--pri);letter-spacing:.4px}
+        .logo-tag{color:var(--txt2);font-size:12px;line-height:1.5;max-width:320px;margin:8px auto 0}
+        .fg{margin-bottom:18px}
+        .fg label{display:block;margin-bottom:5px;font-weight:500;font-size:13px}
+        .fg input,.fg select{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;transition:border .2s}
+        .fg input:focus,.fg select:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(115,74,90,.1)}
+        .btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-p{background:var(--pri);color:#fff}.btn-p:hover{background:var(--pri-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(115,74,90,.3)}
+        .btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+        .btn-s{background:var(--bg2);color:var(--pri);margin-top:10px}.btn-s:hover{background:var(--bdr)}
+        .btn-sm{width:auto;padding:8px 16px;font-size:13px;border-radius:6px}
+        .btn-out{background:var(--err);color:#fff;width:auto;padding:7px 14px;font-size:12px;border-radius:6px}.btn-out:hover{background:#D32F2F}
+        .btn-green{background:var(--ok);color:#fff}.btn-green:hover{background:#388E3C}
+        .btn-warn{background:var(--warn);color:#fff}.btn-warn:hover{background:#F57C00}
+        .msg{padding:11px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;display:none}
+        .msg.error{background:#FFEBEE;color:var(--err);border-left:4px solid var(--err)}
+        .msg.success{background:#E8F5E9;color:var(--ok);border-left:4px solid var(--ok)}
+        .msg.vis{display:block}
+        .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #fff;border-radius:50%;animation:sp .7s linear infinite}
+        @keyframes sp{to{transform:rotate(360deg)}}
+        /* SHELL */
+        .shell{display:none;height:100vh;flex-direction:column}.shell.on{display:flex}
+        .top-bar{background:#fff;border-bottom:1px solid var(--bdr);padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+        .top-l{display:flex;flex-direction:column}
+        .top-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--pri)}
+        .top-sub{font-size:10px;color:var(--acc);margin-top:1px;letter-spacing:.3px;text-transform:uppercase}
+        .top-r{display:flex;align-items:center;gap:14px}
+        .top-email{font-size:12px;color:var(--txt);font-weight:500;text-align:right}
+        .top-role{font-size:10px;color:var(--acc)}
+        .sess-bar{background:linear-gradient(135deg,#FFF3E0,#FFF8E1);border-bottom:1px solid #FFE0B2;padding:6px 24px;display:flex;justify-content:space-between;font-size:11px;color:#E65100}
+        .sess-bar .tm{font-weight:700;font-size:13px}
+        /* NAV */
+        .nav{background:#fff;border-bottom:1px solid var(--bdr);display:flex;padding:0 24px;gap:0;overflow-x:auto}
+        .nav-tab{padding:12px 18px;font-size:13px;font-weight:500;color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;user-select:none}
+        .nav-tab:hover{color:var(--pri);background:var(--bg)}
+        .nav-tab.on{color:var(--pri);border-bottom-color:var(--pri);font-weight:600}
+        .main{flex:1;overflow-y:auto;padding:24px}
+        .tab-panel{display:none}.tab-panel.on{display:block}
+        /* CARDS */
+        .card{background:#fff;border-radius:var(--radius);padding:22px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.03)}
+        .card-t{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--pri-d);margin-bottom:12px}
+        .card-c{font-size:13px;color:var(--txt2);line-height:1.7}
+        .banner{background:linear-gradient(135deg,var(--pri),var(--pri-l));border-radius:var(--radius);padding:24px 28px;margin-bottom:22px;color:#fff}
+        .banner h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin-bottom:6px}
+        .banner p{font-size:13px;opacity:.9}
+        .igrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+        .igrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px}
+        .ibox{background:var(--bg2);padding:14px;border-radius:8px;text-align:center}
+        .ibox-l{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+        .ibox-v{font-size:17px;font-weight:700;color:var(--pri)}.ibox-v.green{color:var(--ok)}.ibox-v.yellow{color:var(--warn)}.ibox-v.red{color:var(--err)}
+        .slist{list-style:none}.slist li{padding:10px 0;border-bottom:1px solid var(--bg2);display:flex;justify-content:space-between;align-items:center;font-size:13px}.slist li:last-child{border:none}
+        .badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:16px}.badge-g{background:#E8F5E9;color:var(--ok)}.badge-y{background:#FFF3E0;color:var(--warn)}.badge-r{background:#FFEBEE;color:var(--err)}
+        /* ACTIVITY FEED */
+        .feed-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--bg2);align-items:flex-start}
+        .feed-item:last-child{border:none}
+        .feed-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+        .feed-dot.green{background:var(--ok)}.feed-dot.yellow{background:var(--warn)}.feed-dot.red{background:var(--err)}.feed-dot.blue{background:#2196F3}
+        .feed-text{font-size:13px;color:var(--txt)}.feed-time{font-size:11px;color:var(--txt3);margin-top:2px}
+        /* STATUS CARDS */
+        .status-card{border-radius:8px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .2s}
+        .status-card:hover{transform:translateX(4px)}
+        .status-card.green{background:#E8F5E9;border-left:4px solid var(--ok)}
+        .status-card.yellow{background:#FFF8E1;border-left:4px solid var(--warn)}
+        .status-card.red{background:#FFEBEE;border-left:4px solid var(--err)}
+        .status-name{font-weight:600;font-size:14px}.status-detail{font-size:12px;color:var(--txt2);margin-top:2px}
+        .status-badge{font-size:20px}
+        /* CLIENT DETAIL */
+        .client-detail{background:var(--bg2);border-radius:8px;padding:16px;margin-top:12px}
+        .cd-section{margin-bottom:14px}.cd-section:last-child{margin:0}
+        .cd-title{font-size:12px;font-weight:600;color:var(--pri);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+        /* SCHEDULE */
+        .sched-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:16px 0}
+        .day-col{text-align:center}.day-name{font-size:11px;font-weight:600;color:var(--pri);margin-bottom:8px;text-transform:uppercase}
+        .day-btn{width:100%;padding:8px 4px;border:1px solid var(--bdr);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s;margin-bottom:4px}
+        .day-btn:hover{border-color:var(--pri);background:var(--bg)}.day-btn.sel{background:var(--pri);color:#fff;border-color:var(--pri)}
+        .tp-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg2);flex-wrap:wrap}
+        .tp-day{font-weight:600;font-size:13px;color:var(--pri);min-width:100px}
+        .tp-sel{padding:8px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px;background:#fff}
+        .tp-sel:focus{outline:none;border-color:var(--pri)}
+        .tp-remove{background:none;border:none;color:var(--err);cursor:pointer;font-size:16px;padding:4px 8px}
+        /* WORKOUT BUILDER */
+        .wb-form{display:grid;gap:14px}
+        .wb-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.wb-full{grid-column:1/-1}
+        .wb-label{font-size:12px;font-weight:500;margin-bottom:4px;display:block;color:var(--txt2)}
+        .wb-input{width:100%;padding:10px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px}
+        .wb-input:focus{outline:none;border-color:var(--pri)}
+        .wb-textarea{width:100%;padding:10px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;min-height:70px}
+        .wb-textarea:focus{outline:none;border-color:var(--pri)}
+        .ex-row{background:var(--bg2);border-radius:8px;padding:14px;margin-bottom:10px;position:relative}
+        .ex-row .ex-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px}
+        .ex-remove{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--err);cursor:pointer;font-size:14px}
+        .ex-input{padding:8px 10px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;width:100%}.ex-input:focus{outline:none;border-color:var(--pri)}
+        .ex-label{font-size:10px;color:var(--txt3);margin-bottom:2px;display:block}
+        /* SESSION CARD */
+        .sess-card{background:#fff;border:1px solid var(--bdr);border-radius:var(--radius);padding:18px;margin-bottom:14px;transition:box-shadow .2s}
+        .sess-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+        .sess-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+        .sess-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--pri-d)}
+        .sess-time{font-size:12px;color:var(--acc);font-weight:500}
+        .sess-date{font-size:12px;color:var(--txt2)}
+        .sess-ex{margin-top:10px}.sess-ex-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bg2);font-size:13px}.sess-ex-row:last-child{border:none}
+        .sess-ex-name{font-weight:500}.sess-ex-detail{color:var(--txt2)}
+        .sess-notes{margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:6px;font-size:12px;color:var(--pri-d);border-left:3px solid var(--acc-l);font-style:italic}
+        .sess-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+        .sess-assigned{margin-top:8px;font-size:12px;color:var(--acc)}.sess-assigned strong{color:var(--pri)}
+        .vid-link{display:inline-flex;align-items:center;gap:4px;color:var(--pri);font-size:12px;text-decoration:none;font-weight:500}.vid-link:hover{text-decoration:underline}
+        .empty{text-align:center;padding:40px 20px;color:var(--txt2)}.empty-icon{font-size:48px;margin-bottom:12px;opacity:.4}.empty-text{font-size:14px}.empty-sub{font-size:12px;color:var(--txt3);margin-top:6px}
+        .cl-row{display:flex;justify-content:space-between;align-items:center;padding:14px;border:1px solid var(--bdr);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+        .cl-row:hover{background:var(--bg2);border-color:var(--acc-l)}
+        .cl-name{font-weight:600;font-size:14px}.cl-email{font-size:12px;color:var(--txt2)}
+        /* MODAL */
+        .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+        .modal{background:#fff;border-radius:12px;padding:28px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+        .modal-t{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--pri-d);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+        .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--txt2);padding:4px}
+        .cb-row{display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px;border-radius:6px;border:1px solid var(--bdr);margin-bottom:6px}
+        .cb-row:hover{background:var(--bg2)}
+        .cb-row input{cursor:pointer;width:18px;height:18px;accent-color:var(--pri)}
+        @media(max-width:600px){
+            .sched-grid{grid-template-columns:repeat(4,1fr)}.ex-row .ex-grid{grid-template-columns:1fr 1fr}.wb-row{grid-template-columns:1fr}
+            .igrid,.igrid3{grid-template-columns:1fr}.nav-tab{padding:10px 12px;font-size:12px}.main{padding:16px}.top-bar{padding:10px 16px}.sess-bar{padding:6px 16px}
+        }
+    </style>
+</head>
+<body>
+<!-- AUTH -->
+<div id="authScreen" class="auth-wrap">
+    <div class="auth-box">
+        <div class="auth-hdr"><div class="logo">The SISS Client Portal™</div><div class="logo-tag">Your private hub for capacity-based training, tracking, and guided progression.</div></div>
+        <div id="msgBox" class="msg"></div>
+        <div id="loginForm">
+            <div class="fg"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
+            <div class="fg"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+            <button class="btn btn-p" id="loginBtn" onclick="handleLogin()">Login</button>
+            <button class="btn btn-s" onclick="showForm('signup')">Don't have an account? Sign up</button>
+        </div>
+        <div id="signupForm" class="hidden">
+            <div class="fg"><label>Full Name</label><input type="text" id="signupName" placeholder="Your full name"></div>
+            <div class="fg"><label>Email</label><input type="email" id="signupEmail" placeholder="your@email.com"></div>
+            <div class="fg"><label>Password (6+ characters)</label><input type="password" id="signupPassword" placeholder="••••••••" minlength="6"></div>
+            <div class="fg"><label>Account Type</label><select id="signupRole"><option value="client">Client</option><option value="coach">Coach</option></select></div>
+            <button class="btn btn-p" id="signupBtn" onclick="handleSignup()">Create Account</button>
+            <button class="btn btn-s" onclick="showForm('login')">Already have an account? Login</button>
+        </div>
+    </div>
+</div>
+<!-- SHELL -->
+<div id="shell" class="shell">
+    <div class="top-bar">
+        <div class="top-l"><div class="top-title" id="dashTitle">The SISS Client Portal™</div><div class="top-sub">Capacity-Based Training & Guided Progression</div></div>
+        <div class="top-r"><div><div class="top-email" id="dispEmail">—</div><div class="top-role" id="dispRole">—</div></div><button class="btn btn-out" onclick="handleLogout()">Logout</button></div>
+    </div>
+    <div class="sess-bar"><span>Session auto-logout:</span><span class="tm" id="timerDisplay">02:00:00</span></div>
+    <div class="nav" id="navBar"></div>
+    <div class="main" id="mainContent"></div>
+</div>
+
+<script>
+firebase.initializeApp({apiKey:"AIzaSyCpF4ykT6BCmfNXTR-o5fsdwMqmsLO5VDA",authDomain:"rebuild-and-rise.firebaseapp.com",projectId:"rebuild-and-rise",storageBucket:"rebuild-and-rise.firebasestorage.app",messagingSenderId:"87951065832",appId:"1:87951065832:web:840c590cfa0580600b3f5d"});
+const auth=firebase.auth(),db=firebase.firestore();
+const SESSION_MS=2*60*60*1000;
+let lastAct=Date.now(),tmrInt=null,CUR_USER=null,CUR_DATA=null,exercises=[],allClients=[],allSessions=[],allProgress=[];
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAYS_S=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const TIMES=[];for(let h=5;h<=21;h++)for(let m=0;m<60;m+=15){const hr=h>12?h-12:h===0?12:h;const ap=h>=12?'PM':'AM';TIMES.push({val:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`,label:`${hr}:${String(m).padStart(2,'0')} ${ap}`})}
+
+function devId(){let i=localStorage.getItem('siss_dev');if(!i){i='d_'+Math.random().toString(36).substr(2,10)+'_'+Date.now();localStorage.setItem('siss_dev',i)}return i}
+
+// AUTH
+auth.onAuthStateChanged(async u=>{
+    if(u){try{const d=await db.collection('users').doc(u.uid).get();CUR_USER=u;CUR_DATA=d.exists?d.data():{accountType:'client',name:'',email:u.email};showShell()}catch(e){CUR_USER=u;CUR_DATA={accountType:'client',name:'',email:u.email};showShell()}}
+    else{showAuth()}
+});
+function showForm(t){document.getElementById('loginForm').classList.toggle('hidden',t!=='login');document.getElementById('signupForm').classList.toggle('hidden',t!=='signup');hideMsg()}
+async function handleLogin(){
+    const e=document.getElementById('loginEmail').value.trim(),p=document.getElementById('loginPassword').value;
+    if(!e||!p){showMsg('Enter email and password.','error');return}
+    const b=document.getElementById('loginBtn');b.disabled=true;b.innerHTML='<span class="spin"></span> Logging in...';
+    try{const c=await auth.signInWithEmailAndPassword(e,p);await db.collection('users').doc(c.user.uid).set({lastDeviceId:devId(),lastLoginTime:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+    catch(err){let m='Login failed. ';if(err.code==='auth/invalid-credential')m+='Invalid email or password.';else if(err.code==='auth/too-many-requests')m+='Too many attempts.';else m+=err.message;showMsg(m,'error');b.disabled=false;b.innerHTML='Login'}
+}
+async function handleSignup(){
+    const n=document.getElementById('signupName').value.trim(),e=document.getElementById('signupEmail').value.trim(),p=document.getElementById('signupPassword').value,r=document.getElementById('signupRole').value;
+    if(!n||!e||!p){showMsg('Fill in all fields.','error');return}if(p.length<6){showMsg('Password must be 6+ characters.','error');return}
+    const b=document.getElementById('signupBtn');b.disabled=true;b.innerHTML='<span class="spin"></span> Creating...';
+    try{const c=await auth.createUserWithEmailAndPassword(e,p);await db.collection('users').doc(c.user.uid).set({email:e,name:n,accountType:r,lastDeviceId:devId(),createdAt:firebase.firestore.FieldValue.serverTimestamp(),lastLoginTime:firebase.firestore.FieldValue.serverTimestamp()})}
+    catch(err){let m='Signup failed. ';if(err.code==='auth/email-already-in-use')m+='Email already in use.';else m+=err.message;showMsg(m,'error');b.disabled=false;b.innerHTML='Create Account'}
+}
+function handleLogout(){if(tmrInt)clearInterval(tmrInt);auth.signOut()}
+function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('shell').classList.remove('on');['loginBtn','signupBtn'].forEach(id=>{const b=document.getElementById(id);if(b){b.disabled=false;b.innerHTML=id==='loginBtn'?'Login':'Create Account'}});showForm('login');hideMsg()}
+function showMsg(t,tp){const b=document.getElementById('msgBox');b.textContent=t;b.className='msg '+tp+' vis'}
+function hideMsg(){document.getElementById('msgBox').className='msg'}
+
+// TIMER
+function startTimer(){
+    lastAct=Date.now();['click','keydown','scroll','touchstart'].forEach(e=>document.addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
+    if(tmrInt)clearInterval(tmrInt);
+    tmrInt=setInterval(()=>{const r=Math.max(0,SESSION_MS-(Date.now()-lastAct));const h=Math.floor(r/3600000),m=Math.floor((r%3600000)/60000),s=Math.floor((r%60000)/1000);
+        document.getElementById('timerDisplay').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        if(r<=0){clearInterval(tmrInt);handleLogout();setTimeout(()=>showMsg('Session expired.','error'),500)}
+        const bar=document.querySelector('.sess-bar');if(r<300000){bar.style.background='linear-gradient(135deg,#FFEBEE,#FFCDD2)';bar.style.color='#C62828'}else{bar.style.background='';bar.style.color=''}
+    },1000);
+}
+
+// SHELL
+function showShell(){
+    document.getElementById('authScreen').style.display='none';document.getElementById('shell').classList.add('on');
+    document.getElementById('dispEmail').textContent=CUR_USER.email;
+    const isC=CUR_DATA.accountType==='coach';
+    document.getElementById('dispRole').textContent=isC?'Coach':'Client';
+    document.getElementById('dashTitle').textContent=isC?'SISS Portal — Coach View':'SISS Portal — My Dashboard';
+    buildNav(isC);startTimer();
+}
+
+function buildNav(isC){
+    const nav=document.getElementById('navBar'),main=document.getElementById('mainContent');nav.innerHTML='';main.innerHTML='';
+    const tabs=isC
+        ?[{id:'dashboard',label:'Dashboard'},{id:'clients',label:'Clients'},{id:'builder',label:'Create Workout'},{id:'library',label:'Workout Library'},{id:'schedule',label:'Schedule'}]
+        :[{id:'dashboard',label:'Dashboard'},{id:'schedule',label:'Schedule'},{id:'program',label:'My Program'},{id:'messages',label:'Messages'}];
+    tabs.forEach((t,i)=>{
+        const tab=document.createElement('div');tab.className='nav-tab'+(i===0?' on':'');tab.textContent=t.label;tab.dataset.tab=t.id;
+        tab.onclick=()=>{nav.querySelectorAll('.nav-tab').forEach(n=>n.classList.remove('on'));tab.classList.add('on');main.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));document.getElementById('panel-'+t.id).classList.add('on');loadTab(t.id)};
+        nav.appendChild(tab);
+        const panel=document.createElement('div');panel.id='panel-'+t.id;panel.className='tab-panel'+(i===0?' on':'');main.appendChild(panel);
+    });
+    if(isC){loadCoachData().then(()=>buildCoachDashboard())}else{buildClientPanels()}
+}
+
+function loadTab(id){
+    if(id==='dashboard'&&CUR_DATA.accountType==='coach')buildCoachDashboard();
+    if(id==='clients')buildClientsTab();
+    if(id==='library')buildLibraryTab();
+    if(id==='schedule')buildScheduleTab();
+    if(id==='program')loadProgram();
+}
+
+// ===== LOAD ALL COACH DATA =====
+async function loadCoachData(){
+    try{
+        const cSnap=await db.collection('users').where('accountType','==','client').get();
+        allClients=[];cSnap.forEach(d=>allClients.push({id:d.id,...d.data()}));
+        const sSnap=await db.collection('scheduledSessions').where('coachId','==',CUR_USER.uid).get();
+        allSessions=[];sSnap.forEach(d=>allSessions.push({id:d.id,...d.data()}));
+        const pSnap=await db.collection('clientProgress').where('coachId','==',CUR_USER.uid).get();
+        allProgress=[];pSnap.forEach(d=>allProgress.push({id:d.id,...d.data()}));
+    }catch(e){console.error('Data load:',e)}
+}
+
+// ===== COACH DASHBOARD =====
+function buildCoachDashboard(){
+    const p=document.getElementById('panel-dashboard');
+    // Build program status for each client
+    let statusHtml='';
+    allClients.forEach(c=>{
+        const clientSessions=allSessions.filter(s=>s.assignedClients&&s.assignedClients.includes(c.id));
+        const clientProgress2=allProgress.filter(pr=>pr.clientId===c.id);
+        const assignedCount=clientSessions.length;
+        const completedCount=clientProgress2.length;
+        const missedCount=assignedCount-completedCount;
+        const hasSchedule=true; // We'd check clientSchedulePreferences
+        const lastLogin=c.lastLoginTime?.toDate?c.lastLoginTime.toDate():null;
+        const daysSinceLogin=lastLogin?Math.floor((Date.now()-lastLogin.getTime())/(1000*60*60*24)):999;
+
+        let status='green',statusIcon='🟢',statusText='On track';
+        if(missedCount>=3||!c.lastLoginTime){status='red';statusIcon='🔴';statusText=missedCount>=3?`Missed ${missedCount} workouts`:'No activity yet'}
+        else if(missedCount>=2||daysSinceLogin>=2){status='yellow';statusIcon='🟡';statusText=daysSinceLogin>=2?`Inactive ${daysSinceLogin} days`:`Missed ${missedCount} workout(s)`}
+
+        statusHtml+=`<div class="status-card ${status}">
+            <div><div class="status-name">${c.name||c.email}</div><div class="status-detail">${statusText} · ${completedCount}/${assignedCount} completed</div></div>
+            <div class="status-badge">${statusIcon}</div>
+        </div>`;
+    });
+
+    // Activity feed
+    let feedItems=[];
+    allProgress.forEach(pr=>{
+        const client=allClients.find(c=>c.id===pr.clientId);
+        const name=client?client.name||client.email:'Unknown';
+        const time=pr.completedAt?.toDate?pr.completedAt.toDate():null;
+        feedItems.push({text:`${name} completed "${pr.title}"`,time:time,dot:'green'});
+    });
+    allSessions.forEach(s=>{
+        const time=s.createdAt?.toDate?s.createdAt.toDate():null;
+        const assigned=s.assignedClients?.length||0;
+        feedItems.push({text:`You published "${s.title}" (${assigned>0?assigned+' client(s)':'unassigned'})`,time:time,dot:'blue'});
+    });
+    feedItems.sort((a,b)=>(b.time?.getTime()||0)-(a.time?.getTime()||0));
+    feedItems=feedItems.slice(0,10);
+
+    let feedHtml=feedItems.length?feedItems.map(f=>`<div class="feed-item">
+        <div class="feed-dot ${f.dot}"></div>
+        <div><div class="feed-text">${f.text}</div><div class="feed-time">${f.time?timeAgo(f.time):''}</div></div>
+    </div>`).join(''):'<div class="empty"><div class="empty-text">No activity yet</div></div>';
+
+    const greenCount=allClients.filter(c=>{const m=allSessions.filter(s=>s.assignedClients?.includes(c.id)).length-allProgress.filter(pr=>pr.clientId===c.id).length;return m<2}).length;
+    const yellowCount=allClients.filter(c=>{const m=allSessions.filter(s=>s.assignedClients?.includes(c.id)).length-allProgress.filter(pr=>pr.clientId===c.id).length;return m>=2&&m<3}).length;
+    const redCount=allClients.length-greenCount-yellowCount;
+
+    p.innerHTML=`
+        <div class="banner"><h2>Welcome Back, Coach</h2><p>Manage your clients, create workouts, and track progress — all from here.</p></div>
+        <div class="igrid3">
+            <div class="ibox"><div class="ibox-l">Total Clients</div><div class="ibox-v">${allClients.length}</div></div>
+            <div class="ibox"><div class="ibox-l">Workouts Created</div><div class="ibox-v">${allSessions.length}</div></div>
+            <div class="ibox"><div class="ibox-l">Completions</div><div class="ibox-v green">${allProgress.length}</div></div>
+        </div>
+        <div class="card" style="margin-top:18px"><div class="card-t">Program Status</div>${statusHtml||'<div class="empty"><div class="empty-text">No clients yet</div></div>'}</div>
+        <div class="card"><div class="card-t">Activity Feed</div>${feedHtml}</div>`;
+}
+
+function timeAgo(d){const s=Math.floor((Date.now()-d.getTime())/1000);if(s<60)return 'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
+
+// ===== CLIENTS TAB =====
+function buildClientsTab(){
+    const p=document.getElementById('panel-clients');
+    if(allClients.length===0){p.innerHTML='<div class="card"><div class="card-t">Your Clients</div><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No clients yet</div></div></div>';return}
+    let html='<div class="card"><div class="card-t">Your Clients</div>';
+    allClients.forEach(c=>{
+        const prog=allProgress.filter(pr=>pr.clientId===c.id);
+        const assigned=allSessions.filter(s=>s.assignedClients?.includes(c.id));
+        const missed=assigned.length-prog.length;
+        let badge='badge-g',btext='On Track';
+        if(missed>=3){badge='badge-r';btext='Needs Attention'}else if(missed>=2){badge='badge-y';btext='Watch'}
+        html+=`<div class="cl-row" onclick="showClientDetail('${c.id}')">
+            <div><div class="cl-name">${c.name||'Unnamed'}</div><div class="cl-email">${c.email}</div></div>
+            <span class="badge ${badge}">${btext}</span>
+        </div>`;
+    });
+    html+='</div><div id="clientDetailArea"></div>';
+    p.innerHTML=html;
+}
+
+async function showClientDetail(clientId){
+    const c=allClients.find(x=>x.id===clientId);
+    if(!c)return;
+    const prog=allProgress.filter(pr=>pr.clientId===clientId);
+    const assigned=allSessions.filter(s=>s.assignedClients?.includes(clientId));
+    // Load schedule prefs
+    let schedHtml='<div style="color:var(--txt3);font-size:13px">No schedule set</div>';
+    try{
+        const sd=await db.collection('clientSchedulePreferences').doc(clientId).get();
+        if(sd.exists&&sd.data().selectedSlots?.length){
+            schedHtml=sd.data().selectedSlots.map(s=>`<span class="badge badge-g" style="margin-right:4px;margin-bottom:4px">${s.dayName} ${s.timeDisplay}</span>`).join('');
+        }
+    }catch(e){}
+
+    let progHtml=prog.length?prog.slice(0,5).map(pr=>`<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:13px">
+        <div style="display:flex;justify-content:space-between"><strong>✓ ${pr.title}</strong><span class="badge badge-g">${pr.capacityLevel==='green'?'🟢':pr.capacityLevel==='yellow'?'🟡':'🔴'} ${pr.capacityLevel}</span></div>
+        <div style="font-size:11px;color:var(--txt3)">${pr.completedAt?.toDate?pr.completedAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div>
+    </div>`).join(''):'<div style="color:var(--txt3);font-size:13px">No completed workouts yet</div>';
+
+    const el=document.getElementById('clientDetailArea');
+    el.innerHTML=`<div class="card">
+        <div class="card-t">${c.name||c.email} — Details</div>
+        <div class="client-detail">
+            <div class="cd-section"><div class="cd-title">Training Schedule</div>${schedHtml}</div>
+            <div class="cd-section"><div class="cd-title">Progress (${prog.length} completed / ${assigned.length} assigned)</div>
+                <div style="background:var(--bdr);border-radius:4px;height:8px;margin:8px 0"><div style="background:var(--ok);height:100%;border-radius:4px;width:${assigned.length?Math.round(prog.length/assigned.length*100):0}%"></div></div>
+            </div>
+            <div class="cd-section"><div class="cd-title">Recent Completions</div>${progHtml}</div>
+            <div class="cd-section"><div class="cd-title">Account Info</div>
+                <div style="font-size:13px;color:var(--txt2)">Email: ${c.email}<br>Joined: ${c.createdAt?.toDate?c.createdAt.toDate().toLocaleDateString():''}<br>Last Login: ${c.lastLoginTime?.toDate?timeAgo(c.lastLoginTime.toDate()):''}</div>
+            </div>
+        </div>
+    </div>`;
+    el.scrollIntoView({behavior:'smooth'});
+}
+
+// ===== CREATE WORKOUT =====
+async function buildWorkoutCreator(){
+    exercises=[{name:'',sets:'',reps:'',weight:'',videoLink:''}];
+    let clientOpts='<option value="">— Save to Library (assign later) —</option>';
+    allClients.forEach(c=>{clientOpts+=`<option value="${c.id}">${c.name||c.email}</option>`});
+    const p=document.getElementById('panel-builder');
+    p.innerHTML=`<div class="card"><div class="card-t">Create Workout Session</div><div class="wb-form">
+        <div class="wb-row"><div><label class="wb-label">Session Title</label><input class="wb-input" id="wbTitle" placeholder="e.g., Session 1: Lower Body Foundation"></div>
+            <div><label class="wb-label">Session Type</label><select class="wb-input" id="wbType"><option value="workout">Workout</option><option value="live-training">Live Training</option><option value="form-review">Form Review</option></select></div></div>
+        <div class="wb-row"><div><label class="wb-label">Assign To</label><select class="wb-input" id="wbClient">${clientOpts}</select></div>
+            <div><label class="wb-label">Duration</label><select class="wb-input" id="wbDuration"><option value="40">40 minutes (Standard)</option></select></div></div>
+        <div class="wb-row"><div><label class="wb-label">Day</label><select class="wb-input" id="wbDay">${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select></div>
+            <div><label class="wb-label">Time</label><select class="wb-input" id="wbTime">${TIMES.map(t=>`<option value="${t.val}">${t.label}</option>`).join('')}</select></div></div>
+        <div class="wb-full"><label class="wb-label">Video/Meeting Link (optional)</label><input class="wb-input" id="wbVideo" placeholder="YouTube, Zoom, or Vimeo link"></div>
+        <div class="wb-full"><label class="wb-label">Coach Notes for Client</label><textarea class="wb-textarea" id="wbNotes" placeholder="e.g., Sarah — focus on depth on squats."></textarea></div>
+        <div class="wb-full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="wb-label" style="margin:0">Exercises</span><button class="btn btn-sm btn-p" onclick="addExercise()">+ Add Exercise</button></div><div id="exList"></div></div>
+        <div class="wb-full" style="display:flex;gap:8px"><button class="btn btn-p btn-green" id="publishBtn" onclick="publishSession(true)" style="flex:1">Assign & Publish</button><button class="btn btn-p btn-warn" onclick="publishSession(false)" style="flex:1">Save to Library</button></div>
+        <div id="wbMsg" class="msg" style="margin-top:8px"></div>
+    </div></div>`;
+    renderExercises();
+}
+function renderExercises(){
+    document.getElementById('exList').innerHTML=exercises.map((ex,i)=>`<div class="ex-row"><button class="ex-remove" onclick="removeExercise(${i})">✕</button>
+        <div class="ex-grid"><div><div class="ex-label">Exercise Name</div><input class="ex-input" value="${ex.name}" onchange="exercises[${i}].name=this.value" placeholder="e.g., Squat"></div>
+        <div><div class="ex-label">Sets</div><input class="ex-input" value="${ex.sets}" onchange="exercises[${i}].sets=this.value" placeholder="4"></div>
+        <div><div class="ex-label">Reps</div><input class="ex-input" value="${ex.reps}" onchange="exercises[${i}].reps=this.value" placeholder="5"></div>
+        <div><div class="ex-label">Weight</div><input class="ex-input" value="${ex.weight}" onchange="exercises[${i}].weight=this.value" placeholder="185 lbs"></div></div>
+        <div style="margin-top:8px"><div class="ex-label">Form Video Link</div><input class="ex-input" value="${ex.videoLink||''}" onchange="exercises[${i}].videoLink=this.value" placeholder="YouTube URL (optional)"></div></div>`).join('');
+}
+function addExercise(){exercises.push({name:'',sets:'',reps:'',weight:'',videoLink:''});renderExercises()}
+function removeExercise(i){if(exercises.length>1){exercises.splice(i,1);renderExercises()}}
+
+async function publishSession(assignNow){
+    const title=document.getElementById('wbTitle').value.trim();
+    const type=document.getElementById('wbType').value;
+    const clientId=document.getElementById('wbClient').value;
+    const dayOfWeek=parseInt(document.getElementById('wbDay').value);
+    const time=document.getElementById('wbTime').value;
+    const videoLink=document.getElementById('wbVideo').value.trim();
+    const notes=document.getElementById('wbNotes').value.trim();
+    const msgEl=document.getElementById('wbMsg');
+    if(!title){msgEl.className='msg error vis';msgEl.textContent='Enter a session title.';return}
+    if(exercises.filter(e=>e.name.trim()).length===0){msgEl.className='msg error vis';msgEl.textContent='Add at least one exercise.';return}
+    if(assignNow&&!clientId){msgEl.className='msg error vis';msgEl.textContent='Select a client to assign, or use "Save to Library".';return}
+    const btn=document.getElementById('publishBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span> Saving...';
+    const now=new Date();let targetDate=new Date(now);const diff=(dayOfWeek-now.getDay()+7)%7;targetDate.setDate(now.getDate()+(diff===0?7:diff));
+    const [hr,mn]=time.split(':');targetDate.setHours(parseInt(hr),parseInt(mn),0,0);
+    const timeLabel=TIMES.find(t=>t.val===time)?.label||time;
+    try{
+        await db.collection('scheduledSessions').add({
+            coachId:CUR_USER.uid,title,type,date:firebase.firestore.Timestamp.fromDate(targetDate),time,timeDisplay:timeLabel,dayOfWeek,dayName:DAYS[dayOfWeek],duration:40,
+            exercises:exercises.filter(e=>e.name.trim()).map(e=>({name:e.name.trim(),sets:e.sets,reps:e.reps,weight:e.weight,videoLink:e.videoLink||''})),
+            coachNotes:notes,videoLink,assignedClients:assignNow&&clientId?[clientId]:[],isPublished:assignNow&&!!clientId,isCompleted:false,
+            createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        msgEl.className='msg success vis';msgEl.textContent=assignNow?`"${title}" published & assigned!`:`"${title}" saved to Workout Library.`;
+        btn.disabled=false;btn.innerHTML='Assign & Publish';
+        document.getElementById('wbTitle').value='';document.getElementById('wbNotes').value='';document.getElementById('wbVideo').value='';
+        exercises=[{name:'',sets:'',reps:'',weight:'',videoLink:''}];renderExercises();
+        await loadCoachData();
+    }catch(e){msgEl.className='msg error vis';msgEl.textContent='Error: '+e.message;btn.disabled=false;btn.innerHTML='Assign & Publish'}
+}
+
+// ===== WORKOUT LIBRARY =====
+function buildLibraryTab(){
+    const p=document.getElementById('panel-library');
+    const unassigned=allSessions.filter(s=>!s.assignedClients||s.assignedClients.length===0);
+    if(unassigned.length===0){p.innerHTML='<div class="card"><div class="card-t">Workout Library</div><div class="empty"><div class="empty-icon">📚</div><div class="empty-text">No saved workouts</div><div class="empty-sub">Create a workout and choose "Save to Library" to store it here</div></div></div>';return}
+    let html='<div class="card"><div class="card-t">Workout Library ('+unassigned.length+' workouts)</div>';
+    unassigned.forEach(s=>{
+        html+=`<div class="sess-card">
+            <div class="sess-hdr"><div><div class="sess-title">${s.title}</div><div class="sess-date">${s.dayName||''} · ${s.timeDisplay||s.time||''} · 40 min</div></div><span class="badge badge-y">Unassigned</span></div>
+            <div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+            ${s.coachNotes?`<div class="sess-notes">💬 ${s.coachNotes}</div>`:''}
+            <div class="sess-actions"><button class="btn btn-sm btn-p" onclick="openAssignModal('${s.id}','${s.title.replace(/'/g,"\\'")}')">Assign to Client</button><button class="btn btn-sm btn-out" onclick="deleteSession('${s.id}')">Delete</button></div>
+        </div>`;
+    });
+    html+='</div>';p.innerHTML=html;
+}
+
+async function deleteSession(id){
+    if(!confirm('Delete this workout?'))return;
+    try{await db.collection('scheduledSessions').doc(id).delete();await loadCoachData();buildLibraryTab()}catch(e){alert('Error: '+e.message)}
+}
+
+// ===== ASSIGN MODAL =====
+let currentAssignId=null;
+function openAssignModal(sessionId,title){
+    currentAssignId=sessionId;
+    let cbHtml=allClients.map(c=>`<label class="cb-row"><input type="checkbox" value="${c.id}" class="assign-cb"><span>${c.name||c.email}</span></label>`).join('');
+    const modal=document.createElement('div');modal.className='modal-overlay';
+    modal.innerHTML=`<div class="modal"><div class="modal-t"><span>Assign "${title}"</span><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
+        <div style="margin-bottom:16px;font-size:13px;color:var(--txt2)">Select which clients should receive this workout:</div>
+        ${cbHtml}
+        <div style="display:flex;gap:8px;margin-top:20px"><button class="btn btn-p btn-green" onclick="saveAssignment()" style="flex:1">Assign & Publish</button><button class="btn btn-s" onclick="document.querySelector('.modal-overlay').remove()" style="flex:1;margin:0">Cancel</button></div></div>`;
+    document.body.appendChild(modal);
+}
+async function saveAssignment(){
+    const cbs=document.querySelectorAll('.assign-cb');const sel=[];cbs.forEach(cb=>{if(cb.checked)sel.push(cb.value)});
+    if(sel.length===0){alert('Select at least one client.');return}
+    try{await db.collection('scheduledSessions').doc(currentAssignId).update({assignedClients:sel,isPublished:true});
+        document.querySelector('.modal-overlay').remove();await loadCoachData();buildLibraryTab();
+        showMsg2('Assigned to '+sel.length+' client(s)!');
+    }catch(e){alert('Error: '+e.message)}
+}
+
+// ===== SCHEDULE TAB (Coach) =====
+function buildScheduleTab(){
+    const isC=CUR_DATA.accountType==='coach';
+    if(isC){buildCoachSchedule()}else{loadClientSchedule()}
+}
+function buildCoachSchedule(){
+    const p=document.getElementById('panel-schedule');
+    const assigned=allSessions.filter(s=>s.assignedClients&&s.assignedClients.length>0);
+    if(assigned.length===0){p.innerHTML='<div class="card"><div class="card-t">Scheduled Sessions</div><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No assigned sessions</div><div class="empty-sub">Create a workout and assign it to a client</div></div></div>';return}
+    let html='<div class="card"><div class="card-t">Scheduled Sessions ('+assigned.length+')</div>';
+    assigned.forEach(s=>{
+        const clientNames=s.assignedClients.map(cid=>{const cl=allClients.find(x=>x.id===cid);return cl?cl.name||cl.email:'Unknown'}).join(', ');
+        const dateStr=s.date?.toDate?s.date.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'TBD';
+        const isComplete=allProgress.some(pr=>pr.sessionId===s.id);
+        html+=`<div class="sess-card">
+            <div class="sess-hdr"><div><div class="sess-title">${s.title}</div><div class="sess-date">${dateStr}</div></div><div class="sess-time">${s.timeDisplay||s.time}</div></div>
+            <div class="sess-assigned">Assigned to: <strong>${clientNames}</strong></div>
+            <div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+            ${s.coachNotes?`<div class="sess-notes">💬 ${s.coachNotes}</div>`:''}
+            <div class="sess-actions"><button class="btn btn-sm btn-p" onclick="openAssignModal('${s.id}','${s.title.replace(/'/g,"\\'")}')">Edit Assignment</button></div>
+        </div>`;
+    });
+    html+='</div>';p.innerHTML=html;
+}
+
+// ===== CLIENT SCHEDULE =====
+async function loadClientSchedule(){
+    const el=document.getElementById('panel-schedule');
+    el.innerHTML='<div class="card"><div class="card-t">My Upcoming Workouts</div><div id="clSchedList"><div class="empty"><div class="empty-text">Loading...</div></div></div></div>';
+    try{
+        const snap=await db.collection('scheduledSessions').where('isPublished','==',true).get();
+        const list=document.getElementById('clSchedList');
+        let html='';let count=0;
+        snap.forEach(doc=>{
+            const s=doc.data();
+            if(s.assignedClients&&s.assignedClients.length>0&&!s.assignedClients.includes(CUR_USER.uid))return;
+            if(s.isCompleted)return;
+            count++;
+            const dateStr=s.date?.toDate?s.date.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'TBD';
+            html+=`<div class="sess-card">
+                <div class="sess-hdr"><div><div class="sess-title">${s.title}</div><div class="sess-date">${dateStr}</div></div><div class="sess-time">${s.timeDisplay||s.time}</div></div>
+                <div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+                ${s.coachNotes?`<div class="sess-notes">💬 Coach: ${s.coachNotes}</div>`:''}
+                ${s.videoLink?`<div style="margin-top:8px"><a href="${s.videoLink}" target="_blank" class="vid-link">▶ Video Link</a></div>`:''}
+                <div class="sess-actions"><button class="btn btn-sm btn-p btn-green" onclick="markComplete('${doc.id}')">Mark Complete</button></div>
+            </div>`;
+        });
+        list.innerHTML=count?html:'<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No workouts scheduled yet</div><div class="empty-sub">Your coach will assign workouts to you</div></div>';
+    }catch(e){document.getElementById('clSchedList').innerHTML='<div class="empty"><div class="empty-text">Error: '+e.message+'</div></div>'}
+}
+
+async function markComplete(sessionId){
+    if(!confirm('Mark this workout as complete?'))return;
+    try{const doc=await db.collection('scheduledSessions').doc(sessionId).get();const s=doc.data();
+        await db.collection('clientProgress').add({clientId:CUR_USER.uid,coachId:s.coachId,sessionId,title:s.title,exercises:s.exercises||[],coachNotes:s.coachNotes||'',capacityLevel:'green',completedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        await db.collection('scheduledSessions').doc(sessionId).update({isCompleted:true});
+        loadClientSchedule();showMsg2('Workout completed! Check My Program.');
+    }catch(e){alert('Error: '+e.message)}
+}
+
+// ===== PROGRAM TAB (Client) =====
+async function loadProgram(){
+    const el=document.getElementById('panel-program');
+    el.innerHTML='<div class="card"><div class="card-t">Completed Workouts</div><div id="clProgList"><div class="empty"><div class="empty-text">Loading...</div></div></div></div>';
+    try{
+        const snap=await db.collection('clientProgress').where('clientId','==',CUR_USER.uid).get();
+        const list=document.getElementById('clProgList');
+        if(snap.empty){list.innerHTML='<div class="empty"><div class="empty-icon">💪</div><div class="empty-text">No completed workouts yet</div></div>';return}
+        let docs=[];snap.forEach(d=>docs.push({id:d.id,data:d.data()}));
+        docs.sort((a,b)=>(b.data.completedAt?.toDate?.().getTime()||0)-(a.data.completedAt?.toDate?.().getTime()||0));
+        list.innerHTML=docs.map(doc=>{const p2=doc.data;const ds=p2.completedAt?.toDate?p2.completedAt.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+            return `<div class="sess-card"><div class="sess-hdr"><div><div class="sess-title">✓ ${p2.title}</div><div class="sess-date">Completed: ${ds}</div></div><span class="badge badge-g">🟢 ${p2.capacityLevel}</span></div>
+            <div class="sess-ex">${(p2.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+            ${p2.coachNotes?`<div class="sess-notes">💬 Coach: ${p2.coachNotes}</div>`:''}</div>`}).join('');
+    }catch(e){document.getElementById('clProgList').innerHTML='<div class="empty"><div class="empty-text">Error: '+e.message+'</div></div>'}
+}
+
+// ===== CLIENT PANELS =====
+let selectedSlots=[];
+function buildClientPanels(){
+    document.getElementById('panel-dashboard').innerHTML=`
+        <div class="banner"><h2>Welcome to Your Program</h2><p>Select your training days and your coach will build customized workouts just for you.</p></div>
+        <div class="card"><div class="card-t">Your Program Overview</div><div class="igrid">
+            <div class="ibox"><div class="ibox-l">Program</div><div class="ibox-v">12 Weeks</div></div>
+            <div class="ibox"><div class="ibox-l">Total Access</div><div class="ibox-v">94 Days</div></div>
+            <div class="ibox"><div class="ibox-l">Grace Period</div><div class="ibox-v">10 Days</div></div>
+            <div class="ibox"><div class="ibox-l">Status</div><div class="ibox-v green">Active</div></div></div></div>
+        <div class="card"><div class="card-t">Your Coach's Policies</div><ul class="slist">
+            <li>Weekday Response <span class="badge badge-g">2-4 Hours</span></li>
+            <li>Weekend Response <span class="badge badge-y">12-24 Hours</span></li>
+            <li>Communication <span class="badge badge-g">In-App Only</span></li>
+            <li>Phone Access <span class="badge badge-r">Not Available</span></li></ul></div>
+        <div class="card"><div class="card-t">Select Your Training Days</div>
+            <div class="card-c">Choose which days and times you'd like to train. Your coach will then build customized workouts for those days.</div>
+            <div id="schedPicker"></div>
+            <button class="btn btn-p" style="margin-top:16px" onclick="saveSchedulePref()">Save My Training Schedule</button>
+            <div id="schedMsg" class="msg" style="margin-top:8px"></div></div>`;
+    buildSchedulePicker();
+    document.getElementById('panel-messages').innerHTML='<div class="card"><div class="card-t">Messages</div><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Messaging coming soon</div></div></div>';
+}
+
+function buildSchedulePicker(){
+    document.getElementById('schedPicker').innerHTML=`<div class="sched-grid">${DAYS.map((d,i)=>`<div class="day-col"><div class="day-name">${DAYS_S[i]}</div><button class="day-btn" data-day="${i}" onclick="toggleDay(this,${i})">${d.substr(0,3)}</button></div>`).join('')}</div><div id="timeSlots"></div>`;
+    loadSchedulePref();
+}
+function toggleDay(btn,idx){btn.classList.toggle('sel');const i=selectedSlots.findIndex(s=>s.dayOfWeek===idx);if(i>=0)selectedSlots.splice(i,1);else selectedSlots.push({dayOfWeek:idx,dayName:DAYS[idx],time:'07:00',timeDisplay:'7:00 AM'});selectedSlots.sort((a,b)=>a.dayOfWeek-b.dayOfWeek);renderTimeSlots()}
+function renderTimeSlots(){const el=document.getElementById('timeSlots');if(!selectedSlots.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--txt2);font-size:13px">Click a day above to select it</div>';return}
+    el.innerHTML='<div class="time-picker">'+selectedSlots.map((s,i)=>`<div class="tp-row"><span class="tp-day">${s.dayName}</span><select class="tp-sel" onchange="selectedSlots[${i}].time=this.value;selectedSlots[${i}].timeDisplay=this.options[this.selectedIndex].text">${TIMES.map(t=>`<option value="${t.val}"${t.val===s.time?' selected':''}>${t.label}</option>`).join('')}</select><button class="tp-remove" onclick="removeSlot(${i})">✕</button></div>`).join('')+'</div>'}
+function removeSlot(i){const d=selectedSlots[i].dayOfWeek;selectedSlots.splice(i,1);document.querySelectorAll('.day-btn').forEach(b=>{if(parseInt(b.dataset.day)===d)b.classList.remove('sel')});renderTimeSlots()}
+async function loadSchedulePref(){try{const d=await db.collection('clientSchedulePreferences').doc(CUR_USER.uid).get();if(d.exists){selectedSlots=d.data().selectedSlots||[];document.querySelectorAll('.day-btn').forEach(b=>{if(selectedSlots.find(s=>s.dayOfWeek===parseInt(b.dataset.day)))b.classList.add('sel')});renderTimeSlots()}}catch(e){}}
+async function saveSchedulePref(){const m=document.getElementById('schedMsg');if(!selectedSlots.length){m.className='msg error vis';m.textContent='Select at least one day.';return}
+    try{await db.collection('clientSchedulePreferences').doc(CUR_USER.uid).set({clientId:CUR_USER.uid,coachId:'',selectedSlots,trainingDaysPerWeek:selectedSlots.length,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+        m.className='msg success vis';m.textContent=`Saved! ${selectedSlots.length} day(s): ${selectedSlots.map(s=>s.dayName+' '+s.timeDisplay).join(', ')}`}catch(e){m.className='msg error vis';m.textContent='Error: '+e.message}}
+
+function showMsg2(t){const d=document.createElement('div');d.style.cssText='position:fixed;top:20px;right:20px;background:#E8F5E9;color:#4CAF50;padding:14px 20px;border-radius:8px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15)';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3000)}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('authScreen').style.display!=='none'){const lv=!document.getElementById('loginForm').classList.contains('hidden');if(lv)handleLogin();else handleSignup()}});
+</script>
+</body>
+</html>
