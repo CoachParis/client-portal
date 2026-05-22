@@ -4,832 +4,689 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The SISS Client Portal™</title>
-    <!-- Firebase COMPAT SDKs (required for namespace syntax) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --primary: #734A5A;
-            --primary-light: #8B5C70;
-            --primary-dark: #5A3849;
-            --accent: #A67C92;
-            --accent-light: #D4B5C8;
-            --bg-light: #FAF8F6;
-            --bg-medium: #F3EEEA;
-            --border: #E8DED7;
-            --text-primary: #2C2C2C;
-            --text-secondary: #666;
-            --success: #4CAF50;
-            --warning: #FF9800;
-            --error: #F44336;
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --pri:#734A5A;--pri-l:#8B5C70;--pri-d:#5A3849;
+            --acc:#A67C92;--acc-l:#D4B5C8;
+            --bg:#FAF8F6;--bg2:#F3EEEA;--bdr:#E8DED7;
+            --txt:#2C2C2C;--txt2:#666;--txt3:#999;
+            --ok:#4CAF50;--warn:#FF9800;--err:#F44336;
+            --radius:10px;
         }
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;font-size:14px}
+        .hidden{display:none!important}
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
+        /* AUTH */
+        .auth-wrap{display:flex;height:100vh;background:linear-gradient(135deg,var(--pri),var(--pri-d))}
+        .auth-box{width:100%;max-width:430px;margin:auto;background:#fff;border-radius:16px;padding:40px 34px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+        .auth-hdr{text-align:center;margin-bottom:32px}
+        .logo{font-family:'Playfair Display',serif;font-size:25px;font-weight:700;color:var(--pri);letter-spacing:.4px}
+        .logo-tag{color:var(--txt2);font-size:12px;line-height:1.5;max-width:320px;margin:8px auto 0}
+        .fg{margin-bottom:18px}
+        .fg label{display:block;margin-bottom:5px;font-weight:500;font-size:13px}
+        .fg input,.fg select{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;transition:border .2s}
+        .fg input:focus,.fg select:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(115,74,90,.1)}
+        .btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-p{background:var(--pri);color:#fff}.btn-p:hover{background:var(--pri-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(115,74,90,.3)}
+        .btn-p:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+        .btn-s{background:var(--bg2);color:var(--pri);margin-top:10px}.btn-s:hover{background:var(--bdr)}
+        .btn-sm{width:auto;padding:8px 16px;font-size:13px;border-radius:6px}
+        .btn-out{background:var(--err);color:#fff;width:auto;padding:7px 14px;font-size:12px;border-radius:6px}
+        .btn-out:hover{background:#D32F2F}
+        .btn-green{background:var(--ok);color:#fff}.btn-green:hover{background:#388E3C}
+        .msg{padding:11px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;display:none}
+        .msg.error{background:#FFEBEE;color:var(--err);border-left:4px solid var(--err)}
+        .msg.success{background:#E8F5E9;color:var(--ok);border-left:4px solid var(--ok)}
+        .msg.vis{display:block}
+        .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #fff;border-radius:50%;animation:sp .7s linear infinite}
+        @keyframes sp{to{transform:rotate(360deg)}}
 
-        /* ===== AUTH SCREEN ===== */
-        .auth-container {
-            display: flex;
-            height: 100vh;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        }
+        /* SHELL */
+        .shell{display:none;height:100vh;flex-direction:column}
+        .shell.on{display:flex}
+        .top-bar{background:#fff;border-bottom:1px solid var(--bdr);padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+        .top-l{display:flex;flex-direction:column}
+        .top-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--pri)}
+        .top-sub{font-size:10px;color:var(--acc);margin-top:1px;letter-spacing:.3px;text-transform:uppercase}
+        .top-r{display:flex;align-items:center;gap:14px}
+        .top-email{font-size:12px;color:var(--txt);font-weight:500;text-align:right}
+        .top-role{font-size:10px;color:var(--acc)}
+        .sess-bar{background:linear-gradient(135deg,#FFF3E0,#FFF8E1);border-bottom:1px solid #FFE0B2;padding:6px 24px;display:flex;justify-content:space-between;font-size:11px;color:#E65100}
+        .sess-bar .tm{font-weight:700;font-size:13px}
 
-        .auth-box {
-            width: 100%;
-            max-width: 440px;
-            margin: auto;
-            background: white;
-            border-radius: 16px;
-            padding: 44px 36px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
+        /* NAV TABS */
+        .nav{background:#fff;border-bottom:1px solid var(--bdr);display:flex;padding:0 24px;gap:0;overflow-x:auto}
+        .nav-tab{padding:12px 20px;font-size:13px;font-weight:500;color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;user-select:none}
+        .nav-tab:hover{color:var(--pri);background:var(--bg)}
+        .nav-tab.on{color:var(--pri);border-bottom-color:var(--pri);font-weight:600}
 
-        .auth-header {
-            text-align: center;
-            margin-bottom: 36px;
-        }
+        /* MAIN CONTENT */
+        .main{flex:1;overflow-y:auto;padding:24px}
+        .tab-panel{display:none}
+        .tab-panel.on{display:block}
 
-        .logo {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
+        /* CARDS */
+        .card{background:#fff;border-radius:var(--radius);padding:22px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.03)}
+        .card-t{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--pri-d);margin-bottom:12px}
+        .card-c{font-size:13px;color:var(--txt2);line-height:1.7}
 
-        .tagline {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.5;
-            max-width: 340px;
-            margin: 0 auto;
-        }
+        /* BANNER */
+        .banner{background:linear-gradient(135deg,var(--pri),var(--pri-l));border-radius:var(--radius);padding:24px 28px;margin-bottom:22px;color:#fff}
+        .banner h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin-bottom:6px}
+        .banner p{font-size:13px;opacity:.9}
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        /* INFO GRID */
+        .igrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+        .ibox{background:var(--bg2);padding:14px;border-radius:8px;text-align:center}
+        .ibox-l{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+        .ibox-v{font-size:17px;font-weight:700;color:var(--pri)}
+        .ibox-v.green{color:var(--ok)}
 
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            font-size: 13px;
-            color: var(--text-primary);
-        }
+        /* STATUS LIST */
+        .slist{list-style:none}
+        .slist li{padding:10px 0;border-bottom:1px solid var(--bg2);display:flex;justify-content:space-between;align-items:center;font-size:13px}
+        .slist li:last-child{border:none}
+        .badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:16px}
+        .badge-g{background:#E8F5E9;color:var(--ok)}
+        .badge-y{background:#FFF3E0;color:var(--warn)}
+        .badge-r{background:#FFEBEE;color:var(--err)}
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-            background: white;
-        }
+        /* SCHEDULE PICKER (Client) */
+        .sched-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:16px 0}
+        .day-col{text-align:center}
+        .day-name{font-size:11px;font-weight:600;color:var(--pri);margin-bottom:8px;text-transform:uppercase}
+        .day-btn{width:100%;padding:8px 4px;border:1px solid var(--bdr);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s;margin-bottom:4px}
+        .day-btn:hover{border-color:var(--pri);background:var(--bg)}
+        .day-btn.sel{background:var(--pri);color:#fff;border-color:var(--pri)}
+        .time-picker{margin-top:16px}
+        .tp-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg2);flex-wrap:wrap}
+        .tp-day{font-weight:600;font-size:13px;color:var(--pri);min-width:100px}
+        .tp-sel{padding:8px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px;background:#fff}
+        .tp-sel:focus{outline:none;border-color:var(--pri)}
+        .tp-remove{background:none;border:none;color:var(--err);cursor:pointer;font-size:16px;padding:4px 8px}
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(115, 74, 90, 0.1);
-        }
+        /* WORKOUT BUILDER (Coach) */
+        .wb-form{display:grid;gap:14px}
+        .wb-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        .wb-full{grid-column:1/-1}
+        .wb-label{font-size:12px;font-weight:500;margin-bottom:4px;display:block;color:var(--txt2)}
+        .wb-input{width:100%;padding:10px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px}
+        .wb-input:focus{outline:none;border-color:var(--pri)}
+        .wb-textarea{width:100%;padding:10px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;min-height:70px}
+        .wb-textarea:focus{outline:none;border-color:var(--pri)}
 
-        .btn {
-            width: 100%;
-            padding: 13px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+        /* EXERCISE ROW */
+        .ex-row{background:var(--bg2);border-radius:8px;padding:14px;margin-bottom:10px;position:relative}
+        .ex-row .ex-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px}
+        .ex-remove{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--err);cursor:pointer;font-size:14px}
+        .ex-input{padding:8px 10px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;width:100%}
+        .ex-input:focus{outline:none;border-color:var(--pri)}
+        .ex-label{font-size:10px;color:var(--txt3);margin-bottom:2px;display:block}
 
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
+        /* SESSION CARD (Schedule/Program) */
+        .sess-card{background:#fff;border:1px solid var(--bdr);border-radius:var(--radius);padding:18px;margin-bottom:14px;transition:box-shadow .2s}
+        .sess-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+        .sess-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+        .sess-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--pri-d)}
+        .sess-time{font-size:12px;color:var(--acc);font-weight:500}
+        .sess-date{font-size:12px;color:var(--txt2)}
+        .sess-ex{margin-top:10px}
+        .sess-ex-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bg2);font-size:13px}
+        .sess-ex-row:last-child{border:none}
+        .sess-ex-name{font-weight:500}
+        .sess-ex-detail{color:var(--txt2)}
+        .sess-notes{margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:6px;font-size:12px;color:var(--pri-d);border-left:3px solid var(--acc-l);font-style:italic}
+        .sess-actions{margin-top:12px;display:flex;gap:8px}
+        .vid-link{display:inline-flex;align-items:center;gap:4px;color:var(--pri);font-size:12px;text-decoration:none;font-weight:500}
+        .vid-link:hover{text-decoration:underline}
 
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(115, 74, 90, 0.3);
-        }
+        /* EMPTY STATE */
+        .empty{text-align:center;padding:40px 20px;color:var(--txt2)}
+        .empty-icon{font-size:48px;margin-bottom:12px;opacity:.4}
+        .empty-text{font-size:14px}
+        .empty-sub{font-size:12px;color:var(--txt3);margin-top:6px}
 
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+        /* CLIENT LIST (Coach) */
+        .cl-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bg2)}
+        .cl-row:last-child{border:none}
+        .cl-name{font-weight:500;font-size:14px}
+        .cl-email{font-size:12px;color:var(--txt2)}
+        .cl-status{font-size:11px}
 
-        .btn-secondary {
-            background-color: var(--bg-medium);
-            color: var(--primary);
-            margin-top: 12px;
-        }
+        /* MODAL */
+        .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+        .modal{background:#fff;border-radius:12px;padding:28px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+        .modal-t{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--pri-d);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+        .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--txt2);padding:4px}
 
-        .btn-secondary:hover {
-            background-color: var(--border);
-        }
-
-        .btn-logout {
-            background-color: var(--error);
-            color: white;
-            width: auto;
-            padding: 8px 16px;
-            font-size: 12px;
-            border-radius: 6px;
-        }
-
-        .btn-logout:hover {
-            background-color: #D32F2F;
-        }
-
-        .msg {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 13px;
-            display: none;
-        }
-
-        .msg.error {
-            background-color: #FFEBEE;
-            color: var(--error);
-            border-left: 4px solid var(--error);
-        }
-
-        .msg.success {
-            background-color: #E8F5E9;
-            color: var(--success);
-            border-left: 4px solid var(--success);
-        }
-
-        .msg.visible {
-            display: block;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .hidden { display: none !important; }
-
-        /* ===== DASHBOARD ===== */
-        .dashboard-container {
-            display: none;
-            height: 100vh;
-            flex-direction: column;
-            background-color: var(--bg-light);
-        }
-
-        .dashboard-container.active {
-            display: flex;
-        }
-
-        .dashboard-header {
-            background-color: white;
-            border-bottom: 1px solid var(--border);
-            padding: 16px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-left {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header-title {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .header-subtitle {
-            font-size: 11px;
-            color: var(--accent);
-            margin-top: 2px;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .user-info {
-            text-align: right;
-        }
-
-        .user-email {
-            font-size: 13px;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .user-role {
-            font-size: 11px;
-            color: var(--accent);
-        }
-
-        .session-bar {
-            background: linear-gradient(135deg, #FFF3E0, #FFF8E1);
-            border-bottom: 1px solid #FFE0B2;
-            padding: 8px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #E65100;
-        }
-
-        .session-bar .timer {
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .dashboard-main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 28px;
-        }
-
-        .welcome-banner {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-radius: 12px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
-            color: white;
-        }
-
-        .welcome-banner h2 {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .welcome-banner p {
-            font-size: 14px;
-            opacity: 0.9;
-            line-height: 1.6;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            border: 1px solid rgba(0,0,0,0.04);
-        }
-
-        .card-title {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 14px;
-            color: var(--primary-dark);
-        }
-
-        .card-content {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-
-        .card-content ul {
-            margin-left: 20px;
-            margin-top: 10px;
-        }
-
-        .card-content li {
-            margin-bottom: 6px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 12px;
-        }
-
-        .info-box {
-            background-color: var(--bg-medium);
-            padding: 14px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .info-label {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .info-value.green { color: var(--success); }
-
-        .status-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .status-list li {
-            padding: 10px 0;
-            border-bottom: 1px solid var(--bg-medium);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .status-list li:last-child {
-            border-bottom: none;
-        }
-
-        .status-badge {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        .status-badge.active {
-            background-color: #E8F5E9;
-            color: var(--success);
-        }
-
-        .status-badge.pending {
-            background-color: #FFF3E0;
-            color: var(--warning);
-        }
-
-        @media (max-width: 600px) {
-            .auth-box {
-                max-width: 100%;
-                border-radius: 0;
-                padding: 30px 20px;
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-            .info-grid { grid-template-columns: 1fr; }
-            .dashboard-header { padding: 14px 16px; }
-            .dashboard-main { padding: 16px; }
-            .session-bar { padding: 8px 16px; }
-            .header-title { font-size: 17px; }
+        @media(max-width:600px){
+            .sched-grid{grid-template-columns:repeat(4,1fr)}
+            .ex-row .ex-grid{grid-template-columns:1fr 1fr}
+            .wb-row{grid-template-columns:1fr}
+            .igrid{grid-template-columns:1fr}
+            .nav-tab{padding:10px 14px;font-size:12px}
+            .main{padding:16px}
+            .top-bar{padding:10px 16px}
+            .sess-bar{padding:6px 16px}
         }
     </style>
 </head>
 <body>
 
-    <!-- ==================== AUTH SCREEN ==================== -->
-    <div id="authScreen" class="auth-container">
-        <div class="auth-box">
-            <div class="auth-header">
-                <div class="logo">The SISS Client Portal™</div>
-                <div class="tagline">Your private hub for capacity-based training, tracking, and guided progression.</div>
-            </div>
-
-            <div id="msgBox" class="msg"></div>
-
-            <!-- LOGIN FORM -->
-            <div id="loginForm">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" required placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
-                </div>
-                <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">Login</button>
-                <button class="btn btn-secondary" onclick="showForm('signup')">Don't have an account? Sign up</button>
-            </div>
-
-            <!-- SIGNUP FORM -->
-            <div id="signupForm" class="hidden">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="signupName" required placeholder="Your full name">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="signupEmail" required placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Password (6+ characters)</label>
-                    <input type="password" id="signupPassword" required placeholder="••••••••" minlength="6">
-                </div>
-                <div class="form-group">
-                    <label>Account Type</label>
-                    <select id="signupRole">
-                        <option value="client">Client</option>
-                        <option value="coach">Coach</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary" id="signupBtn" onclick="handleSignup()">Create Account</button>
-                <button class="btn btn-secondary" onclick="showForm('login')">Already have an account? Login</button>
-            </div>
+<!-- ==================== AUTH ==================== -->
+<div id="authScreen" class="auth-wrap">
+    <div class="auth-box">
+        <div class="auth-hdr">
+            <div class="logo">The SISS Client Portal™</div>
+            <div class="logo-tag">Your private hub for capacity-based training, tracking, and guided progression.</div>
+        </div>
+        <div id="msgBox" class="msg"></div>
+        <div id="loginForm">
+            <div class="fg"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"></div>
+            <div class="fg"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+            <button class="btn btn-p" id="loginBtn" onclick="handleLogin()">Login</button>
+            <button class="btn btn-s" onclick="showForm('signup')">Don't have an account? Sign up</button>
+        </div>
+        <div id="signupForm" class="hidden">
+            <div class="fg"><label>Full Name</label><input type="text" id="signupName" placeholder="Your full name"></div>
+            <div class="fg"><label>Email</label><input type="email" id="signupEmail" placeholder="your@email.com"></div>
+            <div class="fg"><label>Password (6+ characters)</label><input type="password" id="signupPassword" placeholder="••••••••" minlength="6"></div>
+            <div class="fg"><label>Account Type</label><select id="signupRole"><option value="client">Client</option><option value="coach">Coach</option></select></div>
+            <button class="btn btn-p" id="signupBtn" onclick="handleSignup()">Create Account</button>
+            <button class="btn btn-s" onclick="showForm('login')">Already have an account? Login</button>
         </div>
     </div>
+</div>
 
-    <!-- ==================== DASHBOARD ==================== -->
-    <div id="dashboard" class="dashboard-container">
-        <div class="dashboard-header">
-            <div class="header-left">
-                <div class="header-title" id="dashTitle">The SISS Client Portal™</div>
-                <div class="header-subtitle">Capacity-Based Training & Guided Progression</div>
-            </div>
-            <div class="header-right">
-                <div class="user-info">
-                    <div class="user-email" id="dispEmail">—</div>
-                    <div class="user-role" id="dispRole">—</div>
-                </div>
-                <button class="btn btn-logout" onclick="handleLogout()">Logout</button>
-            </div>
+<!-- ==================== APP SHELL ==================== -->
+<div id="shell" class="shell">
+    <div class="top-bar">
+        <div class="top-l">
+            <div class="top-title" id="dashTitle">The SISS Client Portal™</div>
+            <div class="top-sub">Capacity-Based Training & Guided Progression</div>
         </div>
-
-        <div class="session-bar">
-            <span>Session auto-logout in:</span>
-            <span class="timer" id="timerDisplay">02:00:00</span>
-        </div>
-
-        <div class="dashboard-main">
-
-            <!-- ===== COACH VIEW ===== -->
-            <div id="coachView" class="hidden">
-                <div class="welcome-banner">
-                    <h2>Welcome Back, Coach</h2>
-                    <p>Your premium coaching platform is live. Create workouts, schedule sessions, and track your clients — all from here.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Platform Status</div>
-                    <ul class="status-list">
-                        <li>Firebase Authentication <span class="status-badge active">Active</span></li>
-                        <li>Firestore Database <span class="status-badge active">Connected</span></li>
-                        <li>Session Duration <span class="status-badge active">2 Hours</span></li>
-                        <li>Device Limit <span class="status-badge active">1 Device</span></li>
-                        <li>Account Sharing <span class="status-badge active">Blocked</span></li>
-                    </ul>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Coming in Session 2</div>
-                    <div class="card-content">
-                        <ul>
-                            <li>Client day/time selection (15-min increments)</li>
-                            <li>Workout creation with exercises + videos</li>
-                            <li>Coach notes per session</li>
-                            <li>Schedule Tab (upcoming sessions)</li>
-                            <li>Program Tab (completed history)</li>
-                            <li>Real-time sync across devices</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== CLIENT VIEW ===== -->
-            <div id="clientView" class="hidden">
-                <div class="welcome-banner">
-                    <h2>Welcome to Your Program</h2>
-                    <p>Your personalized coaching journey starts here. Select your training days and your coach will build customized workouts just for you.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Your Program Overview</div>
-                    <div class="info-grid">
-                        <div class="info-box">
-                            <div class="info-label">Program</div>
-                            <div class="info-value">12 Weeks</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-label">Total Access</div>
-                            <div class="info-value">94 Days</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-label">Grace Period</div>
-                            <div class="info-value">10 Days</div>
-                        </div>
-                        <div class="info-box">
-                            <div class="info-label">Status</div>
-                            <div class="info-value green">Active</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Your Coach's Policies</div>
-                    <ul class="status-list">
-                        <li>Weekday Response Time <span class="status-badge active">2-4 Hours</span></li>
-                        <li>Weekend Response Time <span class="status-badge pending">12-24 Hours</span></li>
-                        <li>Communication <span class="status-badge active">In-App Only</span></li>
-                        <li>Phone Access <span class="status-badge" style="background:#FFEBEE;color:#F44336;">Not Available</span></li>
-                    </ul>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">What's Coming Next</div>
-                    <div class="card-content">
-                        <ul>
-                            <li>Select your training days and times</li>
-                            <li>View your customized workout schedule</li>
-                            <li>Log your progress and strength gains</li>
-                            <li>Track measurements and photos</li>
-                            <li>Message your coach directly</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
+        <div class="top-r">
+            <div><div class="top-email" id="dispEmail">—</div><div class="top-role" id="dispRole">—</div></div>
+            <button class="btn btn-out" onclick="handleLogout()">Logout</button>
         </div>
     </div>
+    <div class="sess-bar"><span>Session auto-logout:</span><span class="tm" id="timerDisplay">02:00:00</span></div>
 
-    <!-- ==================== JAVASCRIPT ==================== -->
-    <script>
-        // ===== FIREBASE INIT =====
-        const firebaseConfig = {
-            apiKey: "AIzaSyCpF4ykT6BCmfNXTR-o5fsdwMqmsLO5VDA",
-            authDomain: "rebuild-and-rise.firebaseapp.com",
-            projectId: "rebuild-and-rise",
-            storageBucket: "rebuild-and-rise.firebasestorage.app",
-            messagingSenderId: "87951065832",
-            appId: "1:87951065832:web:840c590cfa0580600b3f5d"
-        };
+    <!-- NAV -->
+    <div class="nav" id="navBar"></div>
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+    <!-- CONTENT -->
+    <div class="main" id="mainContent"></div>
+</div>
 
-        // ===== SESSION CONFIG =====
-        const SESSION_MS = 2 * 60 * 60 * 1000; // 2 hours
-        let lastActivity = Date.now();
-        let timerInterval = null;
+<!-- ==================== JS ==================== -->
+<script>
+// ===== FIREBASE =====
+firebase.initializeApp({
+    apiKey:"AIzaSyCpF4ykT6BCmfNXTR-o5fsdwMqmsLO5VDA",
+    authDomain:"rebuild-and-rise.firebaseapp.com",
+    projectId:"rebuild-and-rise",
+    storageBucket:"rebuild-and-rise.firebasestorage.app",
+    messagingSenderId:"87951065832",
+    appId:"1:87951065832:web:840c590cfa0580600b3f5d"
+});
+const auth=firebase.auth(), db=firebase.firestore();
+const SESSION_MS=2*60*60*1000;
+let lastAct=Date.now(),tmrInt=null,CUR_USER=null,CUR_DATA=null;
 
-        // ===== DEVICE ID =====
-        function getDeviceId() {
-            let id = localStorage.getItem('siss_device_id');
-            if (!id) {
-                id = 'dev_' + Math.random().toString(36).substr(2, 12) + '_' + Date.now();
-                localStorage.setItem('siss_device_id', id);
-            }
-            return id;
-        }
+// ===== DEVICE ID =====
+function devId(){let i=localStorage.getItem('siss_dev');if(!i){i='d_'+Math.random().toString(36).substr(2,10)+'_'+Date.now();localStorage.setItem('siss_dev',i)}return i}
 
-        // ===== AUTH STATE LISTENER =====
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                try {
-                    const doc = await db.collection('users').doc(user.uid).get();
-                    if (doc.exists) {
-                        showDashboard(user, doc.data());
-                    } else {
-                        // User exists in Auth but not Firestore (edge case)
-                        showDashboard(user, { accountType: 'client', name: '', email: user.email });
-                    }
-                } catch (err) {
-                    console.error('Firestore read error:', err);
-                    showDashboard(user, { accountType: 'client', name: '', email: user.email });
-                }
-            } else {
-                showAuth();
-            }
+// ===== AUTH LISTENER =====
+auth.onAuthStateChanged(async u=>{
+    if(u){
+        try{const d=await db.collection('users').doc(u.uid).get();CUR_USER=u;CUR_DATA=d.exists?d.data():{accountType:'client',name:'',email:u.email};showShell()}
+        catch(e){CUR_USER=u;CUR_DATA={accountType:'client',name:'',email:u.email};showShell()}
+    }else{showAuth()}
+});
+
+// ===== AUTH FUNCTIONS =====
+function showForm(t){document.getElementById('loginForm').classList.toggle('hidden',t!=='login');document.getElementById('signupForm').classList.toggle('hidden',t!=='signup');hideMsg()}
+async function handleLogin(){
+    const e=document.getElementById('loginEmail').value.trim(),p=document.getElementById('loginPassword').value;
+    if(!e||!p){showMsg('Enter email and password.','error');return}
+    const b=document.getElementById('loginBtn');b.disabled=true;b.innerHTML='<span class="spin"></span> Logging in...';
+    try{const c=await auth.signInWithEmailAndPassword(e,p);await db.collection('users').doc(c.user.uid).set({lastDeviceId:devId(),lastLoginTime:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+    catch(err){let m='Login failed. ';if(err.code==='auth/user-not-found')m+='No account found.';else if(err.code==='auth/invalid-credential')m+='Invalid email or password.';else if(err.code==='auth/too-many-requests')m+='Too many attempts.';else m+=err.message;showMsg(m,'error');b.disabled=false;b.innerHTML='Login'}
+}
+async function handleSignup(){
+    const n=document.getElementById('signupName').value.trim(),e=document.getElementById('signupEmail').value.trim(),p=document.getElementById('signupPassword').value,r=document.getElementById('signupRole').value;
+    if(!n||!e||!p){showMsg('Fill in all fields.','error');return}
+    if(p.length<6){showMsg('Password must be 6+ characters.','error');return}
+    const b=document.getElementById('signupBtn');b.disabled=true;b.innerHTML='<span class="spin"></span> Creating...';
+    try{const c=await auth.createUserWithEmailAndPassword(e,p);await db.collection('users').doc(c.user.uid).set({email:e,name:n,accountType:r,lastDeviceId:devId(),createdAt:firebase.firestore.FieldValue.serverTimestamp(),lastLoginTime:firebase.firestore.FieldValue.serverTimestamp()})}
+    catch(err){let m='Signup failed. ';if(err.code==='auth/email-already-in-use')m+='Email already in use.';else if(err.code==='auth/weak-password')m+='Password too weak.';else m+=err.message;showMsg(m,'error');b.disabled=false;b.innerHTML='Create Account'}
+}
+function handleLogout(){if(tmrInt)clearInterval(tmrInt);auth.signOut()}
+function showAuth(){document.getElementById('authScreen').style.display='flex';document.getElementById('shell').classList.remove('on');['loginBtn','signupBtn'].forEach(id=>{const b=document.getElementById(id);if(b){b.disabled=false;b.innerHTML=id==='loginBtn'?'Login':'Create Account'}});showForm('login');hideMsg()}
+function showMsg(t,tp){const b=document.getElementById('msgBox');b.textContent=t;b.className='msg '+tp+' vis'}
+function hideMsg(){document.getElementById('msgBox').className='msg'}
+
+// ===== TIMER =====
+function startTimer(){
+    lastAct=Date.now();
+    ['click','keydown','scroll','touchstart'].forEach(e=>document.addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
+    if(tmrInt)clearInterval(tmrInt);
+    tmrInt=setInterval(()=>{
+        const r=Math.max(0,SESSION_MS-(Date.now()-lastAct));
+        const h=Math.floor(r/3600000),m=Math.floor((r%3600000)/60000),s=Math.floor((r%60000)/1000);
+        document.getElementById('timerDisplay').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        if(r<=0){clearInterval(tmrInt);handleLogout();setTimeout(()=>showMsg('Session expired. Please log in again.','error'),500)}
+        const bar=document.querySelector('.sess-bar');
+        if(r<300000){bar.style.background='linear-gradient(135deg,#FFEBEE,#FFCDD2)';bar.style.color='#C62828'}
+        else{bar.style.background='';bar.style.color=''}
+    },1000);
+}
+
+// ===== SHELL & NAV =====
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAYS_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const TIMES=[];for(let h=5;h<=21;h++)for(let m=0;m<60;m+=15){const hr=h>12?h-12:h===0?12:h;const ap=h>=12?'PM':'AM';TIMES.push({val:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`,label:`${hr}:${String(m).padStart(2,'0')} ${ap}`})}
+
+function showShell(){
+    document.getElementById('authScreen').style.display='none';
+    document.getElementById('shell').classList.add('on');
+    document.getElementById('dispEmail').textContent=CUR_USER.email;
+    const isCoach=CUR_DATA.accountType==='coach';
+    document.getElementById('dispRole').textContent=isCoach?'Coach':'Client';
+    document.getElementById('dashTitle').textContent=isCoach?'SISS Portal — Coach View':'SISS Portal — My Dashboard';
+    buildNav(isCoach);
+    startTimer();
+}
+
+function buildNav(isCoach){
+    const nav=document.getElementById('navBar');
+    const main=document.getElementById('mainContent');
+    nav.innerHTML='';main.innerHTML='';
+    const tabs=isCoach
+        ?[{id:'dashboard',label:'Dashboard'},{id:'clients',label:'Clients'},{id:'builder',label:'Create Workout'},{id:'schedule',label:'Schedule'}]
+        :[{id:'dashboard',label:'Dashboard'},{id:'schedule',label:'Schedule'},{id:'program',label:'My Program'},{id:'messages',label:'Messages'}];
+    tabs.forEach((t,i)=>{
+        const tab=document.createElement('div');tab.className='nav-tab'+(i===0?' on':'');tab.textContent=t.label;tab.dataset.tab=t.id;
+        tab.onclick=()=>{nav.querySelectorAll('.nav-tab').forEach(n=>n.classList.remove('on'));tab.classList.add('on');main.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));document.getElementById('panel-'+t.id).classList.add('on');if(t.id==='schedule')loadSchedule();if(t.id==='program')loadProgram();if(t.id==='clients')loadClients()};
+        nav.appendChild(tab);
+        const panel=document.createElement('div');panel.id='panel-'+t.id;panel.className='tab-panel'+(i===0?' on':'');
+        main.appendChild(panel);
+    });
+    if(isCoach)buildCoachPanels();else buildClientPanels();
+}
+
+// ===== COACH PANELS =====
+function buildCoachPanels(){
+    // Dashboard
+    document.getElementById('panel-dashboard').innerHTML=`
+        <div class="banner"><h2>Welcome Back, Coach</h2><p>Create workouts, manage schedules, and track your clients — all from here.</p></div>
+        <div class="card"><div class="card-t">Platform Status</div>
+            <ul class="slist">
+                <li>Firebase Auth <span class="badge badge-g">Active</span></li>
+                <li>Firestore <span class="badge badge-g">Connected</span></li>
+                <li>Session Duration <span class="badge badge-g">2 Hours</span></li>
+                <li>Device Limit <span class="badge badge-g">1 Device</span></li>
+                <li>Account Sharing <span class="badge badge-g">Blocked</span></li>
+            </ul>
+        </div>
+        <div class="card"><div class="card-t">Quick Stats</div>
+            <div class="igrid">
+                <div class="ibox"><div class="ibox-l">Total Clients</div><div class="ibox-v" id="statClients">—</div></div>
+                <div class="ibox"><div class="ibox-l">Active Sessions</div><div class="ibox-v" id="statSessions">—</div></div>
+            </div>
+        </div>`;
+    loadCoachStats();
+
+    // Clients
+    document.getElementById('panel-clients').innerHTML=`<div class="card"><div class="card-t">Your Clients</div><div id="clientList"><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Loading clients...</div></div></div></div>`;
+
+    // Builder
+    buildWorkoutCreator();
+
+    // Schedule
+    document.getElementById('panel-schedule').innerHTML=`<div class="card"><div class="card-t">Scheduled Sessions</div><div id="coachScheduleList"><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">Loading schedule...</div></div></div></div>`;
+}
+
+async function loadCoachStats(){
+    try{
+        const clients=await db.collection('users').where('accountType','==','client').get();
+        document.getElementById('statClients').textContent=clients.size;
+        const sessions=await db.collection('scheduledSessions').where('coachId','==',CUR_USER.uid).get();
+        document.getElementById('statSessions').textContent=sessions.size;
+    }catch(e){console.error(e)}
+}
+
+async function loadClients(){
+    try{
+        const snap=await db.collection('users').where('accountType','==','client').get();
+        const el=document.getElementById('clientList');
+        if(snap.empty){el.innerHTML='<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No clients yet</div><div class="empty-sub">Clients will appear here after they sign up</div></div>';return}
+        let html='';
+        snap.forEach(d=>{const c=d.data();html+=`<div class="cl-row"><div><div class="cl-name">${c.name||'Unnamed'}</div><div class="cl-email">${c.email}</div></div><span class="badge badge-g">Active</span></div>`});
+        el.innerHTML=html;
+    }catch(e){document.getElementById('clientList').innerHTML='<div class="empty"><div class="empty-text">Error loading clients</div></div>'}
+}
+
+// ===== WORKOUT BUILDER =====
+let exercises=[];
+function buildWorkoutCreator(){
+    exercises=[{name:'',sets:'',reps:'',weight:'',videoLink:''}];
+    const p=document.getElementById('panel-builder');
+    p.innerHTML=`
+        <div class="card">
+            <div class="card-t">Create Workout Session</div>
+            <div class="wb-form">
+                <div class="wb-row">
+                    <div><label class="wb-label">Session Title</label><input class="wb-input" id="wbTitle" placeholder="e.g., Session 1: Lower Body Foundation"></div>
+                    <div><label class="wb-label">Session Type</label><select class="wb-input" id="wbType"><option value="workout">Workout</option><option value="live-training">Live Training</option><option value="form-review">Form Review</option></select></div>
+                </div>
+                <div class="wb-row">
+                    <div><label class="wb-label">Assign To</label><select class="wb-input" id="wbClient"><option value="">Loading clients...</option></select></div>
+                    <div><label class="wb-label">Duration (minutes)</label><input class="wb-input" id="wbDuration" type="number" value="60" min="15" step="15"></div>
+                </div>
+                <div class="wb-row">
+                    <div><label class="wb-label">Day</label><select class="wb-input" id="wbDay">${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select></div>
+                    <div><label class="wb-label">Time</label><select class="wb-input" id="wbTime">${TIMES.map(t=>`<option value="${t.val}">${t.label}</option>`).join('')}</select></div>
+                </div>
+                <div class="wb-full"><label class="wb-label">Video/Meeting Link (optional)</label><input class="wb-input" id="wbVideo" placeholder="YouTube, Zoom, or Vimeo link"></div>
+                <div class="wb-full"><label class="wb-label">Coach Notes for Client</label><textarea class="wb-textarea" id="wbNotes" placeholder="e.g., Sarah — focus on depth on squats. Watch your knee alignment."></textarea></div>
+
+                <div class="wb-full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="wb-label" style="margin:0">Exercises</span><button class="btn btn-sm btn-p" onclick="addExercise()">+ Add Exercise</button></div><div id="exList"></div></div>
+
+                <div class="wb-full"><button class="btn btn-p btn-green" id="publishBtn" onclick="publishSession()">Publish Workout to Client</button></div>
+                <div id="wbMsg" class="msg" style="margin-top:8px"></div>
+            </div>
+        </div>`;
+    renderExercises();
+    loadClientDropdown();
+}
+
+function renderExercises(){
+    const el=document.getElementById('exList');
+    el.innerHTML=exercises.map((ex,i)=>`
+        <div class="ex-row">
+            <button class="ex-remove" onclick="removeExercise(${i})">✕</button>
+            <div class="ex-grid">
+                <div><div class="ex-label">Exercise Name</div><input class="ex-input" value="${ex.name}" onchange="exercises[${i}].name=this.value" placeholder="e.g., Squat"></div>
+                <div><div class="ex-label">Sets</div><input class="ex-input" value="${ex.sets}" onchange="exercises[${i}].sets=this.value" placeholder="4"></div>
+                <div><div class="ex-label">Reps</div><input class="ex-input" value="${ex.reps}" onchange="exercises[${i}].reps=this.value" placeholder="5"></div>
+                <div><div class="ex-label">Weight</div><input class="ex-input" value="${ex.weight}" onchange="exercises[${i}].weight=this.value" placeholder="185 lbs"></div>
+            </div>
+            <div style="margin-top:8px"><div class="ex-label">Form Video Link</div><input class="ex-input" value="${ex.videoLink||''}" onchange="exercises[${i}].videoLink=this.value" placeholder="YouTube URL (optional)"></div>
+        </div>`).join('');
+}
+function addExercise(){exercises.push({name:'',sets:'',reps:'',weight:'',videoLink:''});renderExercises()}
+function removeExercise(i){if(exercises.length>1){exercises.splice(i,1);renderExercises()}}
+
+async function loadClientDropdown(){
+    try{
+        const snap=await db.collection('users').where('accountType','==','client').get();
+        const sel=document.getElementById('wbClient');
+        sel.innerHTML='<option value="all">All Clients</option>';
+        snap.forEach(d=>{const c=d.data();sel.innerHTML+=`<option value="${d.id}">${c.name||c.email}</option>`});
+    }catch(e){console.error(e)}
+}
+
+async function publishSession(){
+    const title=document.getElementById('wbTitle').value.trim();
+    const type=document.getElementById('wbType').value;
+    const clientId=document.getElementById('wbClient').value;
+    const duration=parseInt(document.getElementById('wbDuration').value)||60;
+    const dayOfWeek=parseInt(document.getElementById('wbDay').value);
+    const time=document.getElementById('wbTime').value;
+    const videoLink=document.getElementById('wbVideo').value.trim();
+    const notes=document.getElementById('wbNotes').value.trim();
+    const msgEl=document.getElementById('wbMsg');
+
+    if(!title){msgEl.className='msg error vis';msgEl.textContent='Please enter a session title.';return}
+    if(exercises.filter(e=>e.name.trim()).length===0){msgEl.className='msg error vis';msgEl.textContent='Add at least one exercise.';return}
+
+    const btn=document.getElementById('publishBtn');
+    btn.disabled=true;btn.innerHTML='<span class="spin"></span> Publishing...';
+
+    // Calculate next occurrence of selected day
+    const now=new Date();
+    let targetDate=new Date(now);
+    const diff=(dayOfWeek-now.getDay()+7)%7;
+    targetDate.setDate(now.getDate()+(diff===0&&now.getHours()>=parseInt(time.split(':')[0])?7:diff));
+    const [hr,mn]=time.split(':');
+    targetDate.setHours(parseInt(hr),parseInt(mn),0,0);
+
+    const timeLabel=TIMES.find(t=>t.val===time)?.label||time;
+
+    try{
+        const assigned=clientId==='all'?[]:[ clientId ];
+        await db.collection('scheduledSessions').add({
+            coachId:CUR_USER.uid,
+            title:title,
+            type:type,
+            date:firebase.firestore.Timestamp.fromDate(targetDate),
+            time:time,
+            timeDisplay:timeLabel,
+            dayOfWeek:dayOfWeek,
+            dayName:DAYS[dayOfWeek],
+            duration:duration,
+            exercises:exercises.filter(e=>e.name.trim()).map(e=>({name:e.name.trim(),sets:e.sets,reps:e.reps,weight:e.weight,videoLink:e.videoLink||''})),
+            coachNotes:notes,
+            videoLink:videoLink,
+            assignedClients:assigned,
+            isPublished:true,
+            isCompleted:false,
+            createdAt:firebase.firestore.FieldValue.serverTimestamp()
         });
+        msgEl.className='msg success vis';msgEl.textContent=`"${title}" published for ${DAYS[dayOfWeek]} ${timeLabel}!`;
+        btn.disabled=false;btn.innerHTML='Publish Workout to Client';
+        // Reset form
+        document.getElementById('wbTitle').value='';document.getElementById('wbNotes').value='';document.getElementById('wbVideo').value='';
+        exercises=[{name:'',sets:'',reps:'',weight:'',videoLink:''}];renderExercises();
+    }catch(e){
+        msgEl.className='msg error vis';msgEl.textContent='Error publishing: '+e.message;
+        btn.disabled=false;btn.innerHTML='Publish Workout to Client';
+    }
+}
 
-        // ===== FORM TOGGLING =====
-        function showForm(type) {
-            document.getElementById('loginForm').classList.toggle('hidden', type !== 'login');
-            document.getElementById('signupForm').classList.toggle('hidden', type !== 'signup');
-            hideMsg();
-        }
+// ===== CLIENT PANELS =====
+function buildClientPanels(){
+    // Dashboard
+    document.getElementById('panel-dashboard').innerHTML=`
+        <div class="banner"><h2>Welcome to Your Program</h2><p>Select your training days and your coach will build customized workouts just for you.</p></div>
+        <div class="card"><div class="card-t">Your Program Overview</div>
+            <div class="igrid">
+                <div class="ibox"><div class="ibox-l">Program</div><div class="ibox-v">12 Weeks</div></div>
+                <div class="ibox"><div class="ibox-l">Total Access</div><div class="ibox-v">94 Days</div></div>
+                <div class="ibox"><div class="ibox-l">Grace Period</div><div class="ibox-v">10 Days</div></div>
+                <div class="ibox"><div class="ibox-l">Status</div><div class="ibox-v green">Active</div></div>
+            </div>
+        </div>
+        <div class="card"><div class="card-t">Your Coach's Policies</div>
+            <ul class="slist">
+                <li>Weekday Response Time <span class="badge badge-g">2-4 Hours</span></li>
+                <li>Weekend Response Time <span class="badge badge-y">12-24 Hours</span></li>
+                <li>Communication <span class="badge badge-g">In-App Only</span></li>
+                <li>Phone Access <span class="badge badge-r">Not Available</span></li>
+            </ul>
+        </div>
+        <div class="card"><div class="card-t">Select Your Training Days</div>
+            <div class="card-c">Choose which days and times you'd like to train. Your coach will then build customized workouts for those days.</div>
+            <div id="schedPicker"></div>
+            <button class="btn btn-p" style="margin-top:16px" onclick="saveSchedulePref()">Save My Training Schedule</button>
+            <div id="schedMsg" class="msg" style="margin-top:8px"></div>
+        </div>`;
+    buildSchedulePicker();
 
-        // ===== LOGIN =====
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
+    // Schedule Tab
+    document.getElementById('panel-schedule').innerHTML=`<div class="card"><div class="card-t">My Upcoming Workouts</div><div id="clientScheduleList"><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No workouts scheduled yet</div><div class="empty-sub">Select your training days and your coach will build your workouts</div></div></div></div>`;
 
-            if (!email || !password) {
-                showMsg('Please enter your email and password.', 'error');
-                return;
-            }
+    // Program Tab
+    document.getElementById('panel-program').innerHTML=`<div class="card"><div class="card-t">Completed Workouts</div><div id="clientProgramList"><div class="empty"><div class="empty-icon">💪</div><div class="empty-text">No completed workouts yet</div><div class="empty-sub">Workouts you complete will appear here as your program history</div></div></div></div>`;
 
-            const btn = document.getElementById('loginBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Logging in...';
+    // Messages Tab
+    document.getElementById('panel-messages').innerHTML=`<div class="card"><div class="card-t">Messages</div><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Messaging coming soon</div><div class="empty-sub">Direct chat with your coach — launching in the next update</div></div></div>`;
+}
 
-            try {
-                const cred = await auth.signInWithEmailAndPassword(email, password);
+// ===== SCHEDULE PICKER =====
+let selectedSlots=[];
+function buildSchedulePicker(){
+    const el=document.getElementById('schedPicker');
+    el.innerHTML=`<div class="sched-grid">${DAYS.map((d,i)=>`<div class="day-col"><div class="day-name">${DAYS_SHORT[i]}</div><button class="day-btn" data-day="${i}" onclick="toggleDay(this,${i})">${d.substr(0,3)}</button></div>`).join('')}</div><div id="timeSlots"></div>`;
+    // Load existing preferences
+    loadSchedulePref();
+}
 
-                // Update device tracking
-                await db.collection('users').doc(cred.user.uid).set({
-                    lastDeviceId: getDeviceId(),
-                    lastLoginTime: firebase.firestore.FieldValue.serverTimestamp(),
-                    sessionExpiry: new Date(Date.now() + SESSION_MS)
-                }, { merge: true });
+function toggleDay(btn,dayIdx){
+    btn.classList.toggle('sel');
+    const idx=selectedSlots.findIndex(s=>s.dayOfWeek===dayIdx);
+    if(idx>=0){selectedSlots.splice(idx,1)}
+    else{selectedSlots.push({dayOfWeek:dayIdx,dayName:DAYS[dayIdx],time:'07:00',timeDisplay:'7:00 AM'})}
+    selectedSlots.sort((a,b)=>a.dayOfWeek-b.dayOfWeek);
+    renderTimeSlots();
+}
 
-            } catch (err) {
-                let msg = 'Login failed. ';
-                if (err.code === 'auth/user-not-found') msg += 'No account found with that email.';
-                else if (err.code === 'auth/wrong-password') msg += 'Incorrect password.';
-                else if (err.code === 'auth/invalid-credential') msg += 'Invalid email or password.';
-                else if (err.code === 'auth/too-many-requests') msg += 'Too many attempts. Try again later.';
-                else msg += err.message;
-                showMsg(msg, 'error');
+function renderTimeSlots(){
+    const el=document.getElementById('timeSlots');
+    if(selectedSlots.length===0){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--txt2);font-size:13px">Click on a day above to select it</div>';return}
+    el.innerHTML='<div class="time-picker">'+selectedSlots.map((s,i)=>`
+        <div class="tp-row">
+            <span class="tp-day">${s.dayName}</span>
+            <select class="tp-sel" onchange="selectedSlots[${i}].time=this.value;selectedSlots[${i}].timeDisplay=this.options[this.selectedIndex].text">
+                ${TIMES.map(t=>`<option value="${t.val}"${t.val===s.time?' selected':''}>${t.label}</option>`).join('')}
+            </select>
+            <button class="tp-remove" onclick="removeSlot(${i})">✕</button>
+        </div>`).join('')+'</div>';
+}
 
-                btn.disabled = false;
-                btn.innerHTML = 'Login';
-            }
-        }
+function removeSlot(i){
+    const day=selectedSlots[i].dayOfWeek;
+    selectedSlots.splice(i,1);
+    document.querySelectorAll('.day-btn').forEach(b=>{if(parseInt(b.dataset.day)===day)b.classList.remove('sel')});
+    renderTimeSlots();
+}
 
-        // ===== SIGNUP =====
-        async function handleSignup() {
-            const name = document.getElementById('signupName').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const password = document.getElementById('signupPassword').value;
-            const role = document.getElementById('signupRole').value;
-
-            if (!name || !email || !password) {
-                showMsg('Please fill in all fields.', 'error');
-                return;
-            }
-            if (password.length < 6) {
-                showMsg('Password must be at least 6 characters.', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('signupBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Creating account...';
-
-            try {
-                const cred = await auth.createUserWithEmailAndPassword(email, password);
-
-                // Create Firestore user document
-                await db.collection('users').doc(cred.user.uid).set({
-                    email: email,
-                    name: name,
-                    accountType: role,
-                    lastDeviceId: getDeviceId(),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastLoginTime: firebase.firestore.FieldValue.serverTimestamp(),
-                    sessionExpiry: new Date(Date.now() + SESSION_MS)
-                });
-
-                // onAuthStateChanged will handle the redirect
-
-            } catch (err) {
-                let msg = 'Signup failed. ';
-                if (err.code === 'auth/email-already-in-use') msg += 'An account with this email already exists.';
-                else if (err.code === 'auth/weak-password') msg += 'Password is too weak (6+ characters required).';
-                else if (err.code === 'auth/invalid-email') msg += 'Please enter a valid email address.';
-                else msg += err.message;
-                showMsg(msg, 'error');
-
-                btn.disabled = false;
-                btn.innerHTML = 'Create Account';
-            }
-        }
-
-        // ===== LOGOUT =====
-        function handleLogout() {
-            if (timerInterval) clearInterval(timerInterval);
-            auth.signOut();
-        }
-
-        // ===== SHOW SCREENS =====
-        function showAuth() {
-            document.getElementById('authScreen').style.display = 'flex';
-            document.getElementById('dashboard').classList.remove('active');
-            // Reset buttons
-            const lb = document.getElementById('loginBtn');
-            const sb = document.getElementById('signupBtn');
-            if (lb) { lb.disabled = false; lb.innerHTML = 'Login'; }
-            if (sb) { sb.disabled = false; sb.innerHTML = 'Create Account'; }
-            showForm('login');
-            hideMsg();
-        }
-
-        function showDashboard(user, data) {
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('dashboard').classList.add('active');
-
-            // Set user info
-            document.getElementById('dispEmail').textContent = user.email;
-            const isCoach = data.accountType === 'coach';
-            document.getElementById('dispRole').textContent = isCoach ? 'Coach' : 'Client';
-            document.getElementById('dashTitle').textContent = isCoach
-                ? 'SISS Portal — Coach View'
-                : 'SISS Portal — My Dashboard';
-
-            // Show correct view
-            document.getElementById('coachView').classList.toggle('hidden', !isCoach);
-            document.getElementById('clientView').classList.toggle('hidden', isCoach);
-
-            // Start session timer
-            startSessionTimer();
-        }
-
-        // ===== SESSION TIMER =====
-        function startSessionTimer() {
-            lastActivity = Date.now();
-
-            // Track user activity
-            ['click', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
-                document.addEventListener(evt, () => { lastActivity = Date.now(); }, { passive: true });
+async function loadSchedulePref(){
+    try{
+        const doc=await db.collection('clientSchedulePreferences').doc(CUR_USER.uid).get();
+        if(doc.exists){
+            selectedSlots=doc.data().selectedSlots||[];
+            // Highlight selected days
+            document.querySelectorAll('.day-btn').forEach(b=>{
+                if(selectedSlots.find(s=>s.dayOfWeek===parseInt(b.dataset.day)))b.classList.add('sel');
             });
-
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                const elapsed = Date.now() - lastActivity;
-                const remaining = Math.max(0, SESSION_MS - elapsed);
-
-                const h = Math.floor(remaining / 3600000);
-                const m = Math.floor((remaining % 3600000) / 60000);
-                const s = Math.floor((remaining % 60000) / 1000);
-                document.getElementById('timerDisplay').textContent =
-                    `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-
-                // Auto-logout
-                if (remaining <= 0) {
-                    clearInterval(timerInterval);
-                    handleLogout();
-                    setTimeout(() => showMsg('Session expired due to inactivity. Please log in again.', 'error'), 500);
-                }
-
-                // Warning at 5 minutes
-                const bar = document.querySelector('.session-bar');
-                if (remaining < 300000) {
-                    bar.style.background = 'linear-gradient(135deg, #FFEBEE, #FFCDD2)';
-                    bar.style.borderColor = '#EF9A9A';
-                    bar.style.color = '#C62828';
-                } else {
-                    bar.style.background = '';
-                    bar.style.borderColor = '';
-                    bar.style.color = '';
-                }
-            }, 1000);
+            renderTimeSlots();
         }
+    }catch(e){console.error(e)}
+}
 
-        // ===== MESSAGES =====
-        function showMsg(text, type) {
-            const box = document.getElementById('msgBox');
-            box.textContent = text;
-            box.className = 'msg ' + type + ' visible';
-        }
-
-        function hideMsg() {
-            document.getElementById('msgBox').className = 'msg';
-        }
-
-        // ===== ENTER KEY SUPPORT =====
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const loginVisible = !document.getElementById('loginForm').classList.contains('hidden');
-                if (loginVisible) handleLogin();
-                else handleSignup();
-            }
+async function saveSchedulePref(){
+    const msgEl=document.getElementById('schedMsg');
+    if(selectedSlots.length===0){msgEl.className='msg error vis';msgEl.textContent='Select at least one training day.';return}
+    try{
+        await db.collection('clientSchedulePreferences').doc(CUR_USER.uid).set({
+            clientId:CUR_USER.uid,
+            coachId:'',// Will be set when assigned to coach
+            selectedSlots:selectedSlots,
+            trainingDaysPerWeek:selectedSlots.length,
+            updatedAt:firebase.firestore.FieldValue.serverTimestamp()
         });
-    </script>
+        msgEl.className='msg success vis';msgEl.textContent=`Saved! ${selectedSlots.length} training day(s): ${selectedSlots.map(s=>s.dayName+' '+s.timeDisplay).join(', ')}`;
+    }catch(e){msgEl.className='msg error vis';msgEl.textContent='Error saving: '+e.message}
+}
+
+// ===== LOAD SCHEDULE (Both Coach & Client) =====
+async function loadSchedule(){
+    const isCoach=CUR_DATA.accountType==='coach';
+    const listId=isCoach?'coachScheduleList':'clientScheduleList';
+    const el=document.getElementById(listId);
+    if(!el)return;
+    el.innerHTML='<div class="empty"><div class="empty-text">Loading...</div></div>';
+
+    try{
+        let query;
+        if(isCoach){query=db.collection('scheduledSessions').where('coachId','==',CUR_USER.uid).where('isCompleted','==',false).orderBy('date','asc')}
+        else{query=db.collection('scheduledSessions').where('isPublished','==',true).where('isCompleted','==',false).orderBy('date','asc')}
+
+        const snap=await query.get();
+        if(snap.empty){el.innerHTML=`<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">${isCoach?'No sessions scheduled yet':'No workouts scheduled yet'}</div><div class="empty-sub">${isCoach?'Go to Create Workout to build one':'Your coach will schedule your workouts'}</div></div>`;return}
+
+        let html='';
+        snap.forEach(doc=>{
+            const s=doc.data();
+            // For clients, filter to only their assigned sessions
+            if(!isCoach && s.assignedClients && s.assignedClients.length>0 && !s.assignedClients.includes(CUR_USER.uid))return;
+
+            const dateStr=s.date?.toDate?s.date.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'TBD';
+            html+=`<div class="sess-card">
+                <div class="sess-hdr"><div><div class="sess-title">${s.title}</div><div class="sess-date">${dateStr}</div></div><div class="sess-time">${s.timeDisplay||s.time}</div></div>
+                <div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+                ${s.coachNotes?`<div class="sess-notes">💬 Coach: ${s.coachNotes}</div>`:''}
+                ${s.videoLink?`<div style="margin-top:8px"><a href="${s.videoLink}" target="_blank" class="vid-link">▶ Video Link</a></div>`:''}
+                ${!isCoach?`<div class="sess-actions"><button class="btn btn-sm btn-p btn-green" onclick="markComplete('${doc.id}')">Mark Complete</button></div>`:''}
+            </div>`;
+        });
+        el.innerHTML=html||`<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No sessions found</div></div>`;
+    }catch(e){
+        console.error('Schedule load error:',e);
+        el.innerHTML=`<div class="empty"><div class="empty-text">Error loading schedule</div><div class="empty-sub">${e.message}</div></div>`;
+    }
+}
+
+// ===== MARK SESSION COMPLETE =====
+async function markComplete(sessionId){
+    if(!confirm('Mark this workout as complete?'))return;
+    try{
+        const doc=await db.collection('scheduledSessions').doc(sessionId).get();
+        const s=doc.data();
+        // Save to clientProgress
+        await db.collection('clientProgress').add({
+            clientId:CUR_USER.uid,
+            coachId:s.coachId,
+            sessionId:sessionId,
+            title:s.title,
+            exercises:s.exercises||[],
+            coachNotes:s.coachNotes||'',
+            capacityLevel:'green',
+            completedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        // Mark session completed for this client
+        await db.collection('scheduledSessions').doc(sessionId).update({isCompleted:true});
+        // Reload
+        loadSchedule();
+        showMsg('Workout completed! Check your Program tab.','success');
+        setTimeout(hideMsg,3000);
+    }catch(e){alert('Error: '+e.message)}
+}
+
+// ===== LOAD PROGRAM (Client - Completed History) =====
+async function loadProgram(){
+    const el=document.getElementById('clientProgramList');
+    if(!el)return;
+    el.innerHTML='<div class="empty"><div class="empty-text">Loading...</div></div>';
+
+    try{
+        const snap=await db.collection('clientProgress').where('clientId','==',CUR_USER.uid).orderBy('completedAt','desc').get();
+        if(snap.empty){el.innerHTML='<div class="empty"><div class="empty-icon">💪</div><div class="empty-text">No completed workouts yet</div><div class="empty-sub">Workouts you complete will appear here as your program history</div></div>';return}
+
+        let html='';
+        snap.forEach(doc=>{
+            const p=doc.data();
+            const dateStr=p.completedAt?.toDate?p.completedAt.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Unknown';
+            html+=`<div class="sess-card">
+                <div class="sess-hdr"><div><div class="sess-title">✓ ${p.title}</div><div class="sess-date">Completed: ${dateStr}</div></div><span class="badge badge-g">${p.capacityLevel==='green'?'🟢 Green':p.capacityLevel==='yellow'?'🟡 Yellow':'🔴 Red'}</span></div>
+                <div class="sess-ex">${(p.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+                ${p.coachNotes?`<div class="sess-notes">💬 Coach: ${p.coachNotes}</div>`:''}
+            </div>`;
+        });
+        el.innerHTML=html;
+    }catch(e){el.innerHTML=`<div class="empty"><div class="empty-text">Error loading program</div><div class="empty-sub">${e.message}</div></div>`}
+}
+
+// ===== ENTER KEY =====
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('authScreen').style.display!=='none'){const lv=!document.getElementById('loginForm').classList.contains('hidden');if(lv)handleLogin();else handleSignup()}});
+</script>
 </body>
 </html>
