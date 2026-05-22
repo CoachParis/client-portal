@@ -13,7 +13,6 @@
 :root{--pri:#734A5A;--pri-l:#8B5C70;--pri-d:#5A3849;--acc:#A67C92;--acc-l:#D4B5C8;--bg:#FAF8F6;--bg2:#F3EEEA;--bdr:#E8DED7;--txt:#2C2C2C;--txt2:#666;--txt3:#999;--ok:#4CAF50;--warn:#FF9800;--err:#F44336;--blue:#2196F3;--radius:10px}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line-height:1.6;font-size:14px}
 .hidden{display:none!important}
-/* AUTH */
 .auth-wrap{display:flex;height:100vh;background:linear-gradient(135deg,var(--pri),var(--pri-d))}.auth-box{width:100%;max-width:430px;margin:auto;background:#fff;border-radius:16px;padding:40px 34px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .auth-hdr{text-align:center;margin-bottom:32px}.logo{font-family:'Playfair Display',serif;font-size:25px;font-weight:700;color:var(--pri);letter-spacing:.4px}.logo-tag{color:var(--txt2);font-size:12px;line-height:1.5;max-width:320px;margin:8px auto 0}
 .fg{margin-bottom:18px}.fg label{display:block;margin-bottom:5px;font-weight:500;font-size:13px}.fg input,.fg select{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;transition:border .2s}.fg input:focus,.fg select:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(115,74,90,.1)}
@@ -26,7 +25,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line
 .btn-warn{background:var(--warn);color:#fff}.btn-warn:hover{background:#F57C00}
 .msg{padding:11px 14px;border-radius:8px;margin-bottom:14px;font-size:13px;display:none}.msg.error{background:#FFEBEE;color:var(--err);border-left:4px solid var(--err)}.msg.success{background:#E8F5E9;color:var(--ok);border-left:4px solid var(--ok)}.msg.vis{display:block}
 .spin{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top:2px solid #fff;border-radius:50%;animation:sp .7s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
-/* SHELL */
 .shell{display:none;height:100vh;flex-direction:column}.shell.on{display:flex}
 .top-bar{background:#fff;border-bottom:1px solid var(--bdr);padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
 .top-l{display:flex;flex-direction:column}.top-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--pri)}.top-sub{font-size:10px;color:var(--acc);margin-top:1px;letter-spacing:.3px;text-transform:uppercase}
@@ -34,38 +32,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line
 .sess-bar{background:linear-gradient(135deg,#FFF3E0,#FFF8E1);border-bottom:1px solid #FFE0B2;padding:6px 24px;display:flex;justify-content:space-between;font-size:11px;color:#E65100}.sess-bar .tm{font-weight:700;font-size:13px}
 .nav{background:#fff;border-bottom:1px solid var(--bdr);display:flex;padding:0;gap:0;overflow-x:auto}.nav-tab{padding:12px 16px;font-size:12px;font-weight:500;color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;user-select:none}.nav-tab:hover{color:var(--pri);background:var(--bg)}.nav-tab.on{color:var(--pri);border-bottom-color:var(--pri);font-weight:600}
 .main{flex:1;overflow-y:auto;padding:24px}.tab-panel{display:none}.tab-panel.on{display:block}
-/* CARDS */
 .card{background:#fff;border-radius:var(--radius);padding:22px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.03)}
 .card-t{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--pri-d);margin-bottom:12px}.card-c{font-size:13px;color:var(--txt2);line-height:1.7}
 .banner{background:linear-gradient(135deg,var(--pri),var(--pri-l));border-radius:var(--radius);padding:24px 28px;margin-bottom:22px;color:#fff}.banner h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin-bottom:6px}.banner p{font-size:13px;opacity:.9}
 .igrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.igrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px}
-.ibox{background:var(--bg2);padding:14px;border-radius:8px;text-align:center}.ibox-l{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}.ibox-v{font-size:17px;font-weight:700;color:var(--pri)}.ibox-v.green{color:var(--ok)}.ibox-v.yellow{color:var(--warn)}.ibox-v.red{color:var(--err)}
-.slist{list-style:none}.slist li{padding:10px 0;border-bottom:1px solid var(--bg2);display:flex;justify-content:space-between;align-items:center;font-size:13px}.slist li:last-child{border:none}
-.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:16px;display:inline-block}.badge-g{background:#E8F5E9;color:var(--ok)}.badge-y{background:#FFF3E0;color:var(--warn)}.badge-r{background:#FFEBEE;color:var(--err)}.badge-b{background:#E3F2FD;color:var(--blue)}
-/* FEED */
-.feed-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--bg2);align-items:flex-start}.feed-item:last-child{border:none}
-.feed-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}.feed-dot.green{background:var(--ok)}.feed-dot.yellow{background:var(--warn)}.feed-dot.red{background:var(--err)}.feed-dot.blue{background:var(--blue)}
-.feed-text{font-size:13px}.feed-time{font-size:11px;color:var(--txt3);margin-top:2px}
-/* STATUS */
+.ibox{background:var(--bg2);padding:14px;border-radius:8px;text-align:center}.ibox-l{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}.ibox-v{font-size:17px;font-weight:700;color:var(--pri)}
 .status-card{border-radius:8px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .2s}.status-card:hover{transform:translateX(4px)}
 .status-card.green{background:#E8F5E9;border-left:4px solid var(--ok)}.status-card.yellow{background:#FFF8E1;border-left:4px solid var(--warn)}.status-card.red{background:#FFEBEE;border-left:4px solid var(--err)}
 .status-name{font-weight:600;font-size:14px}.status-detail{font-size:12px;color:var(--txt2);margin-top:2px}.status-badge{font-size:20px}
-/* CLIENT DETAIL */
-.client-detail{background:var(--bg2);border-radius:8px;padding:16px;margin-top:12px}.cd-section{margin-bottom:14px}.cd-section:last-child{margin:0}.cd-title{font-size:12px;font-weight:600;color:var(--pri);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-/* WORKOUT BUILDER */
+.feed-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--bg2);align-items:flex-start}.feed-item:last-child{border:none}
+.feed-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}.feed-dot.green{background:var(--ok)}.feed-dot.blue{background:var(--blue)}
+.feed-text{font-size:13px}.feed-time{font-size:11px;color:var(--txt3);margin-top:2px}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:16px;display:inline-block}.badge-g{background:#E8F5E9;color:var(--ok)}.badge-y{background:#FFF3E0;color:var(--warn)}.badge-r{background:#FFEBEE;color:var(--err)}.badge-b{background:#E3F2FD;color:var(--blue)}
 .wb-form{display:grid;gap:14px}.wb-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.wb-full{grid-column:1/-1}
 .wb-label{font-size:12px;font-weight:500;margin-bottom:4px;display:block;color:var(--txt2)}.wb-input{width:100%;padding:10px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px}.wb-input:focus{outline:none;border-color:var(--pri)}
-.wb-textarea{width:100%;padding:10px 12px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;min-height:70px}.wb-textarea:focus{outline:none;border-color:var(--pri)}
-.ex-row{background:var(--bg2);border-radius:8px;padding:14px;margin-bottom:10px;position:relative}.ex-row .ex-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px}
+.ex-row{background:var(--bg2);border-radius:8px;padding:14px;margin-bottom:10px;position:relative}.ex-row .ex-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:8px}
 .ex-remove{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--err);cursor:pointer;font-size:14px}
 .ex-input{padding:8px 10px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;width:100%}.ex-input:focus{outline:none;border-color:var(--pri)}.ex-label{font-size:10px;color:var(--txt3);margin-bottom:2px;display:block}
-/* SESSION CARD */
 .sess-card{background:#fff;border:1px solid var(--bdr);border-radius:var(--radius);padding:18px;margin-bottom:14px;transition:box-shadow .2s}.sess-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .sess-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.sess-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--pri-d)}.sess-time{font-size:12px;color:var(--acc);font-weight:500}.sess-date{font-size:12px;color:var(--txt2)}
 .sess-ex{margin-top:10px}.sess-ex-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bg2);font-size:13px}.sess-ex-row:last-child{border:none}.sess-ex-name{font-weight:500}.sess-ex-detail{color:var(--txt2)}
 .sess-notes{margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:6px;font-size:12px;color:var(--pri-d);border-left:3px solid var(--acc-l);font-style:italic}
-.sess-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}.sess-assigned{margin-top:8px;font-size:12px;color:var(--acc)}.sess-assigned strong{color:var(--pri)}
-/* CAPACITY CHECK */
+.sess-actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
 .cap-q{margin-bottom:20px}.cap-q-title{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--txt)}
 .cap-scale{display:flex;gap:6px}.cap-scale button{flex:1;padding:10px 0;border:2px solid var(--bdr);border-radius:8px;background:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
 .cap-scale button:hover{border-color:var(--pri);background:var(--bg)}.cap-scale button.sel{border-color:var(--pri);background:var(--pri);color:#fff}
@@ -77,54 +65,50 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line
 .pill.green{border-color:var(--ok);color:var(--ok);background:#fff}.pill.green.sel,.pill.green:hover{background:var(--ok);color:#fff}
 .pill.yellow{border-color:var(--warn);color:#9E6600;background:#fff}.pill.yellow.sel,.pill.yellow:hover{background:var(--warn);color:#fff}
 .pill.red{border-color:var(--err);color:var(--err);background:#fff}.pill.red.sel,.pill.red:hover{background:var(--err);color:#fff}
-/* TRACKER */
 .meal-slot{display:flex;justify-content:space-between;align-items:center;padding:12px;border:1px solid var(--bdr);border-radius:8px;margin-bottom:8px}
 .meal-name{font-weight:500;font-size:14px}.meal-btns{display:flex;gap:6px}
 .meal-btn{width:36px;height:36px;border-radius:50%;border:2px solid var(--bdr);background:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:inherit}
 .meal-btn:hover{border-color:var(--pri)}.meal-btn.check{background:var(--ok);border-color:var(--ok);color:#fff}.meal-btn.x{background:var(--err);border-color:var(--err);color:#fff}.meal-btn.miss{background:var(--txt3);border-color:var(--txt3);color:#fff}
-/* CIRCLE CHART */
 .chart-wrap{position:relative;width:160px;height:160px;margin:20px auto}
 .chart-wrap svg{transform:rotate(-90deg)}.chart-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
 .chart-pct{font-size:28px;font-weight:700;color:var(--pri)}.chart-label{font-size:11px;color:var(--txt2)}
-/* SCHEDULE */
 .sched-view-toggle{display:flex;gap:0;margin-bottom:16px;border:1px solid var(--bdr);border-radius:8px;overflow:hidden}
 .sv-btn{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;background:#fff;border:none;font-family:inherit;transition:all .2s}.sv-btn.on{background:var(--pri);color:#fff}
 .day-card{border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-bottom:10px}.day-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .day-card-date{font-weight:600;font-size:14px;color:var(--pri)}.day-card-session{font-size:13px;color:var(--txt2);padding:8px;background:var(--bg2);border-radius:6px}
 .add-sched-btn{width:40px;height:40px;border-radius:50%;background:var(--pri);color:#fff;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:fixed;bottom:24px;right:24px;box-shadow:0 4px 12px rgba(115,74,90,.4);z-index:100;transition:all .2s}
 .add-sched-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(115,74,90,.5)}
-/* COACH AVAIL */
-.avail-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bg2);flex-wrap:wrap}
-.avail-day{font-weight:600;font-size:13px;color:var(--pri);min-width:90px}
-.avail-sel{padding:8px 10px;border:1px solid var(--bdr);border-radius:6px;font-family:inherit;font-size:12px}
-/* MODAL */
+.avail-slot{display:grid;grid-template-columns:120px 100px 20px 100px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--bg2)}
+.avail-slot:last-child{border:none}
+.avail-day{font-weight:600;font-size:13px;color:var(--pri)}.avail-sel{padding:6px 8px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px}
+.avail-sep{text-align:center;color:var(--txt3);font-size:12px}
+.avail-add{background:none;border:none;color:var(--pri);cursor:pointer;font-size:16px;font-weight:700;padding:0}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
 .modal{background:#fff;border-radius:12px;padding:28px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .modal-t{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--pri-d);margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
 .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--txt2);padding:4px}
 .cb-row{display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px;border-radius:6px;border:1px solid var(--bdr);margin-bottom:6px}.cb-row:hover{background:var(--bg2)}.cb-row input{cursor:pointer;width:18px;height:18px;accent-color:var(--pri)}
 .cl-row{display:flex;justify-content:space-between;align-items:center;padding:14px;border:1px solid var(--bdr);border-radius:8px;margin-bottom:8px;cursor:pointer;transition:all .2s}.cl-row:hover{background:var(--bg2)}.cl-name{font-weight:600;font-size:14px}.cl-email{font-size:12px;color:var(--txt2)}
+.client-detail{background:var(--bg2);border-radius:8px;padding:16px;margin-top:12px}.cd-section{margin-bottom:14px}.cd-section:last-child{margin:0}.cd-title{font-size:12px;font-weight:600;color:var(--pri);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 .empty{text-align:center;padding:40px 20px;color:var(--txt2)}.empty-icon{font-size:48px;margin-bottom:12px;opacity:.4}.empty-text{font-size:14px}.empty-sub{font-size:12px;color:var(--txt3);margin-top:6px}
-.food-entry{display:flex;gap:8px;margin-bottom:8px}.food-entry input{flex:1}.food-entry button{flex-shrink:0}
 .coach-card{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg2);border-radius:10px;margin-top:16px}
 .coach-avatar{width:50px;height:50px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700}
 .coach-info{flex:1}.coach-name{font-weight:600;font-size:15px;color:var(--pri)}.coach-label{font-size:11px;color:var(--txt3)}
 .msg-icon{width:40px;height:40px;border-radius:50%;background:var(--pri);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .2s}.msg-icon:hover{background:var(--pri-d);transform:scale(1.1)}
 .today-sched{border:2px solid var(--pri);border-radius:10px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:20px}.today-sched:hover{background:var(--bg2);box-shadow:0 4px 12px rgba(115,74,90,.1)}
 .today-label{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--acc);margin-bottom:6px}.today-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--pri-d);font-weight:600}.today-time{font-size:13px;color:var(--txt2);margin-top:4px}
-@media(max-width:600px){.ex-row .ex-grid{grid-template-columns:1fr 1fr}.wb-row{grid-template-columns:1fr}.igrid,.igrid3{grid-template-columns:1fr}.nav-tab{padding:10px 10px;font-size:11px}.main{padding:16px}.top-bar{padding:10px 16px}.chart-wrap{width:130px;height:130px}}
+.food-entry{display:flex;gap:8px;margin-bottom:8px}.food-entry input{flex:1}.food-entry button{flex-shrink:0}
+@media(max-width:600px){.ex-row .ex-grid{grid-template-columns:1fr 1fr}.wb-row{grid-template-columns:1fr}.igrid,.igrid3{grid-template-columns:1fr}.nav-tab{padding:10px 10px;font-size:11px}.main{padding:16px}.top-bar{padding:10px 16px}.chart-wrap{width:130px;height:130px}.avail-slot{grid-template-columns:100px 80px 20px 80px}}
 </style>
 </head>
 <body>
-<!-- AUTH -->
 <div id="authScreen" class="auth-wrap"><div class="auth-box"><div class="auth-hdr"><div class="logo">The SISS Client Portal™</div><div class="logo-tag">Your private hub for capacity-based training, tracking, and guided progression.</div></div>
 <div id="msgBox" class="msg"></div>
 <div id="loginForm"><div class="fg"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"></div><div class="fg"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
 <button class="btn btn-p" id="loginBtn" onclick="handleLogin()">Login</button><button class="btn btn-s" onclick="showForm('signup')">Don't have an account? Sign up</button></div>
 <div id="signupForm" class="hidden"><div class="fg"><label>Full Name</label><input type="text" id="signupName" placeholder="Your full name"></div><div class="fg"><label>Email</label><input type="email" id="signupEmail" placeholder="your@email.com"></div>
 <div class="fg"><label>Password (6+ characters)</label><input type="password" id="signupPassword" placeholder="••••••••" minlength="6"></div><div class="fg"><label>Account Type</label><select id="signupRole"><option value="client">Client</option><option value="coach">Coach</option></select></div>
-<button class="btn btn-p" id="signupBtn" onclick="handleSignup()">Create Account</button><button class="btn btn-s" onclick="showForm('login')">Already have an account? Login</button></div></div></div>
-<!-- SHELL -->
+<button class="btn btn-p" id="signupBtn" onclick="handleSignup()">Create Account</button><button class="btn btn-s" onclick="showForm('login')">Already have an account? Login</button></div></div></div></div>
 <div id="shell" class="shell"><div class="top-bar"><div class="top-l"><div class="top-title" id="dashTitle">The SISS Client Portal™</div><div class="top-sub">Capacity-Based Training & Guided Progression</div></div>
 <div class="top-r"><div><div class="top-email" id="dispEmail">—</div><div class="top-role" id="dispRole">—</div></div><button class="btn btn-out" onclick="handleLogout()">Logout</button></div></div>
 <div class="sess-bar"><span>Session auto-logout:</span><span class="tm" id="timerDisplay">02:00:00</span></div>
@@ -136,11 +120,11 @@ const auth=firebase.auth(),db=firebase.firestore(),TS=firebase.firestore.FieldVa
 const SESSION_MS=2*60*60*1000;let lastAct=Date.now(),tmrInt=null,CUR=null,CDATA=null,exercises=[],allClients=[],allSessions=[],allProgress=[];
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],DS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const TIMES=[];for(let h=5;h<=21;h++)for(let m=0;m<60;m+=15){const hr=h>12?h-12:h===0?12:h;TIMES.push({v:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`,l:`${hr}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`})}
+const EXTYPE=['General','Mobility','Plyo'];
 function devId(){let i=localStorage.getItem('siss_dev');if(!i){i='d_'+Math.random().toString(36).substr(2,10)+'_'+Date.now();localStorage.setItem('siss_dev',i)}return i}
 function timeAgo(d){const s=Math.floor((Date.now()-d.getTime())/1000);if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
 function todayStr(){return new Date().toISOString().split('T')[0]}
 
-// AUTH
 auth.onAuthStateChanged(async u=>{if(u){try{const d=await db.collection('users').doc(u.uid).get();CUR=u;CDATA=d.exists?d.data():{accountType:'client',name:'',email:u.email};showShell()}catch(e){CUR=u;CDATA={accountType:'client'};showShell()}}else showAuth()});
 function showForm(t){document.getElementById('loginForm').classList.toggle('hidden',t!=='login');document.getElementById('signupForm').classList.toggle('hidden',t!=='signup');hideMsg()}
 async function handleLogin(){const e=document.getElementById('loginEmail').value.trim(),p=document.getElementById('loginPassword').value;if(!e||!p){showMsg('Enter email and password.','error');return}const b=document.getElementById('loginBtn');b.disabled=true;b.innerHTML='<span class="spin"></span> Logging in...';try{const c=await auth.signInWithEmailAndPassword(e,p);await db.collection('users').doc(c.user.uid).set({lastDeviceId:devId(),lastLoginTime:TS()},{merge:true})}catch(err){showMsg('Login failed. '+(err.code==='auth/invalid-credential'?'Invalid email or password.':err.message),'error');b.disabled=false;b.innerHTML='Login'}}
@@ -151,10 +135,8 @@ function showMsg(t,tp){const b=document.getElementById('msgBox');b.textContent=t
 function hideMsg(){document.getElementById('msgBox').className='msg'}
 function toast(t){const d=document.createElement('div');d.style.cssText='position:fixed;top:20px;right:20px;background:#E8F5E9;color:#4CAF50;padding:14px 20px;border-radius:8px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15)';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),3000)}
 
-// TIMER
 function startTimer(){lastAct=Date.now();['click','keydown','scroll','touchstart'].forEach(e=>document.addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));if(tmrInt)clearInterval(tmrInt);tmrInt=setInterval(()=>{const r=Math.max(0,SESSION_MS-(Date.now()-lastAct));document.getElementById('timerDisplay').textContent=`${String(Math.floor(r/3600000)).padStart(2,'0')}:${String(Math.floor((r%3600000)/60000)).padStart(2,'0')}:${String(Math.floor((r%60000)/1000)).padStart(2,'0')}`;if(r<=0){clearInterval(tmrInt);handleLogout()}const bar=document.querySelector('.sess-bar');if(r<300000){bar.style.background='linear-gradient(135deg,#FFEBEE,#FFCDD2)';bar.style.color='#C62828'}else{bar.style.background='';bar.style.color=''}},1000)}
 
-// SHELL
 function showShell(){document.getElementById('authScreen').style.display='none';document.getElementById('shell').classList.add('on');document.getElementById('dispEmail').textContent=CUR.email;const isC=CDATA.accountType==='coach';document.getElementById('dispRole').textContent=isC?'Coach':'Client';document.getElementById('dashTitle').textContent=isC?'SISS Portal — Coach View':'SISS Portal — My Dashboard';buildNav(isC);startTimer()}
 function buildNav(isC){const nav=document.getElementById('navBar'),main=document.getElementById('mainContent');nav.innerHTML='';main.innerHTML='';
 const tabs=isC?[{id:'dashboard',label:'Dashboard'},{id:'clients',label:'Clients'},{id:'builder',label:'Create Workout'},{id:'library',label:'Workout Library'},{id:'schedule',label:'Schedule'}]
@@ -178,32 +160,34 @@ let feedItems=[];allProgress.forEach(pr=>{const cl=allClients.find(c=>c.id===pr.
 allSessions.forEach(s=>{feedItems.push({text:`You published "${s.title}" (${s.assignedClients?.length||0} client(s))`,time:s.createdAt?.toDate?s.createdAt.toDate():null,dot:'blue'})});
 feedItems.sort((a,b)=>(b.time?.getTime()||0)-(a.time?.getTime()||0));feedItems=feedItems.slice(0,10);
 p.innerHTML=`<div class="banner"><h2>Welcome Back, Coach</h2><p>Manage your clients, create workouts, and track progress — all from here.</p></div>
-<div class="igrid3"><div class="ibox"><div class="ibox-l">Total Clients</div><div class="ibox-v">${allClients.length}</div></div><div class="ibox"><div class="ibox-l">Workouts Created</div><div class="ibox-v">${allSessions.length}</div></div><div class="ibox"><div class="ibox-l">Completions</div><div class="ibox-v green">${allProgress.length}</div></div></div>
+<div class="igrid3"><div class="ibox"><div class="ibox-l">Total Clients</div><div class="ibox-v">${allClients.length}</div></div><div class="ibox"><div class="ibox-l">Workouts Created</div><div class="ibox-v">${allSessions.length}</div></div><div class="ibox"><div class="ibox-l">Completions</div><div class="ibox-v">${allProgress.length}</div></div></div>
 <div class="card" style="margin-top:18px"><div class="card-t">Program Status</div>${statusHtml||'<div class="empty"><div class="empty-text">No clients yet</div></div>'}</div>
 <div class="card"><div class="card-t">Activity Feed</div>${feedItems.length?feedItems.map(f=>`<div class="feed-item"><div class="feed-dot ${f.dot}"></div><div><div class="feed-text">${f.text}</div><div class="feed-time">${f.time?timeAgo(f.time):''}</div></div></div>`).join(''):'<div class="empty"><div class="empty-text">No activity yet</div></div>'}</div>
-<div class="card"><div class="card-t">Set Your Weekly Availability</div><div class="card-c">Define when clients can book sessions:</div><div id="coachAvail"></div><button class="btn btn-p" style="margin-top:12px" onclick="saveAvailability()">Save Availability</button><div id="availMsg" class="msg" style="margin-top:8px"></div></div>`;
+<div class="card"><div class="card-t">Set Your Weekly Availability (Calendly-Style)</div><div class="card-c" style="margin-bottom:14px">Add multiple time slots per day. Clients will book from these slots.</div><div id="coachAvail"></div><button class="btn btn-p" style="margin-top:12px" onclick="saveAvailability()">Save Availability</button><div id="availMsg" class="msg" style="margin-top:8px"></div></div>`;
 loadAvailability()}
 
-// COACH AVAILABILITY
+// COACH AVAILABILITY — MULTI SLOT PER DAY
 let coachAvail={};
 async function loadAvailability(){try{const d=await db.collection('coachAvailability').doc(CUR.uid).get();if(d.exists)coachAvail=d.data().slots||{}}catch(e){}renderAvailability()}
-function renderAvailability(){const el=document.getElementById('coachAvail');el.innerHTML=DAYS.map((d,i)=>`<div class="avail-row"><span class="avail-day">${d}</span>
-<select class="avail-sel" id="avFrom${i}">${[{v:'off',l:'Off'},...TIMES].map(t=>`<option value="${t.v||t.v}" ${coachAvail[i]?.from===t.v?'selected':''}>${t.l}</option>`).join('')}</select>
-<span style="font-size:12px;color:var(--txt3)">to</span>
-<select class="avail-sel" id="avTo${i}">${TIMES.map(t=>`<option value="${t.v}" ${coachAvail[i]?.to===t.v?'selected':''}>${t.l}</option>`).join('')}</select></div>`).join('')}
-async function saveAvailability(){const slots={};for(let i=0;i<7;i++){const f=document.getElementById('avFrom'+i).value;const t=document.getElementById('avTo'+i).value;if(f!=='off')slots[i]={from:f,to:t,day:DAYS[i]}}
-try{await db.collection('coachAvailability').doc(CUR.uid).set({slots,updatedAt:TS()});coachAvail=slots;const m=document.getElementById('availMsg');m.className='msg success vis';m.textContent='Availability saved!'}catch(e){const m=document.getElementById('availMsg');m.className='msg error vis';m.textContent='Error: '+e.message}}
+function renderAvailability(){const el=document.getElementById('coachAvail');let html='';
+for(let dow=0;dow<7;dow++){const daySlots=coachAvail[dow]||[];html+=`<div style="margin-bottom:16px"><div style="font-weight:600;margin-bottom:8px;color:var(--pri)">${DAYS[dow]}</div>`;
+daySlots.forEach((slot,idx)=>{html+=`<div class="avail-slot"><select class="avail-sel" id="avFrom${dow}_${idx}">${[{v:'off',l:'Off'},...TIMES].map(t=>`<option value="${t.v||t.v}" ${slot.from===t.v?'selected':''}>${t.l}</option>`).join('')}</select>
+<select class="avail-sel" id="avTo${dow}_${idx}">${TIMES.map(t=>`<option value="${t.v}" ${slot.to===t.v?'selected':''}>${t.l}</option>`).join('')}</select>
+<button class="avail-add" onclick="rmSlot(${dow},${idx})">−</button><button class="avail-add" style="color:var(--ok)" onclick="addSlot(${dow},${idx})">+</button></div>`});
+html+='</div>'}el.innerHTML=html}
+function addSlot(dow,idx){if(!coachAvail[dow])coachAvail[dow]=[];coachAvail[dow].splice(idx+1,0,{from:'08:00',to:'12:00'});renderAvailability()}
+function rmSlot(dow,idx){if(coachAvail[dow]&&coachAvail[dow].length>0){coachAvail[dow].splice(idx,1);renderAvailability()}}
+async function saveAvailability(){const slots={};for(let dow=0;dow<7;dow++){slots[dow]=coachAvail[dow]||[]}
+try{await db.collection('coachAvailability').doc(CUR.uid).set({slots,updatedAt:TS()});const m=document.getElementById('availMsg');m.className='msg success vis';m.textContent='Availability saved!'}catch(e){const m=document.getElementById('availMsg');m.className='msg error vis';m.textContent='Error: '+e.message}}
 
 // ===== CLIENTS TAB =====
-function buildClientsTab(){const p=document.getElementById('panel-clients');if(!allClients.length){p.innerHTML='<div class="card"><div class="card-t">Your Clients</div><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No clients yet</div></div></div>';return}
+function buildClientsTab(){const p=document.getElementById('panel-clients');if(!allClients.length){p.innerHTML='<div class="card"><div class="card-t">Your Clients</div><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No clients yet</div></div></card>';return}
 let h='<div class="card"><div class="card-t">Your Clients</div>';allClients.forEach(c=>{const prog=allProgress.filter(pr=>pr.clientId===c.id);const asgn=allSessions.filter(s=>s.assignedClients?.includes(c.id));const missed=asgn.length-prog.length;let bg='badge-g',bt='On Track';if(missed>=3){bg='badge-r';bt='Needs Attention'}else if(missed>=2){bg='badge-y';bt='Watch'}
 h+=`<div class="cl-row" onclick="showClientDetail('${c.id}')"><div><div class="cl-name">${c.name||'Unnamed'}</div><div class="cl-email">${c.email}</div></div><span class="badge ${bg}">${bt}</span></div>`});h+='</div><div id="clientDetailArea"></div>';p.innerHTML=h}
 
 async function showClientDetail(cid){const c=allClients.find(x=>x.id===cid);if(!c)return;const prog=allProgress.filter(pr=>pr.clientId===cid);const asgn=allSessions.filter(s=>s.assignedClients?.includes(cid));
 let schedH='<span style="color:var(--txt3);font-size:13px">No schedule set</span>';
-try{const sd=await db.collection('clientSchedulePreferences').doc(cid).get();if(sd.exists&&sd.data().selectedSlots?.length)schedH=sd.data().selectedSlots.map(s=>`<span class="badge badge-g" style="margin:2px">${s.dayName} ${s.timeDisplay}</span>`).join('')}catch(e){}
 let capH='<span style="color:var(--txt3);font-size:13px">No check-ins yet</span>';
-try{const cs=await db.collection('capacityCheckins').where('clientId','==',cid).get();if(!cs.empty){let items=[];cs.forEach(d=>items.push(d.data()));items.sort((a,b)=>(b.date||'').localeCompare(a.date||''));const recent=items.slice(0,5);capH=recent.map(ci=>`<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span>${ci.date}</span><span class="badge badge-${ci.zone==='green'?'g':ci.zone==='yellow'?'y':'r'}">${ci.zone==='green'?'🟢':ci.zone==='yellow'?'🟡':'🔴'} ${ci.zone}</span></div>`).join('')}}catch(e){}
 let progH=prog.length?prog.slice(0,5).map(pr=>`<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:13px"><div style="display:flex;justify-content:space-between"><strong>✓ ${pr.title}</strong><span class="badge badge-g">${pr.capacityLevel||'green'}</span></div><div style="font-size:11px;color:var(--txt3)">${pr.completedAt?.toDate?pr.completedAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div></div>`).join(''):'<span style="color:var(--txt3);font-size:13px">None yet</span>';
 document.getElementById('clientDetailArea').innerHTML=`<div class="card"><div class="card-t">${c.name||c.email} — Details</div><div class="client-detail">
 <div class="cd-section"><div class="cd-title">Training Schedule</div>${schedH}</div>
@@ -214,38 +198,37 @@ document.getElementById('clientDetailArea').innerHTML=`<div class="card"><div cl
 document.getElementById('clientDetailArea').scrollIntoView({behavior:'smooth'})}
 
 // ===== WORKOUT BUILDER =====
-async function buildWorkoutCreator(){exercises=[{name:'',sets:'',reps:'',weight:'',videoLink:''}];
+async function buildWorkoutCreator(){exercises=[{name:'',type:'General',sets:'',reps:'',weight:'',tempo:'',videoLink:''}];
 let co='<option value="">— Save to Library (assign later) —</option>';allClients.forEach(c=>{co+=`<option value="${c.id}">${c.name||c.email}</option>`});
 document.getElementById('panel-builder').innerHTML=`<div class="card"><div class="card-t">Create Workout Session</div><div class="wb-form">
 <div class="wb-row"><div><label class="wb-label">Session Title</label><input class="wb-input" id="wbTitle" placeholder="e.g., Session 1: Lower Body Foundation"></div><div><label class="wb-label">Type</label><select class="wb-input" id="wbType"><option value="workout">Workout</option><option value="live-training">Live Training</option><option value="form-review">Form Review</option></select></div></div>
 <div class="wb-row"><div><label class="wb-label">Assign To</label><select class="wb-input" id="wbClient">${co}</select></div><div><label class="wb-label">Duration</label><select class="wb-input"><option value="40">40 min (Standard)</option></select></div></div>
 <div class="wb-row"><div><label class="wb-label">Day</label><select class="wb-input" id="wbDay">${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select></div><div><label class="wb-label">Time</label><select class="wb-input" id="wbTime">${TIMES.map(t=>`<option value="${t.v}">${t.l}</option>`).join('')}</select></div></div>
 <div class="wb-full"><label class="wb-label">Video Link (optional)</label><input class="wb-input" id="wbVideo" placeholder="YouTube, Zoom link"></div>
-<div class="wb-full"><label class="wb-label">Coach Notes</label><textarea class="wb-textarea" id="wbNotes" placeholder="e.g., Sarah — focus on depth on squats."></textarea></div>
+<div class="wb-full"><label class="wb-label">Coach Notes</label><textarea class="wb-textarea" id="wbNotes" placeholder="e.g., Sarah — focus on depth on squats." style="height:70px;border:1px solid var(--bdr);border-radius:6px;padding:10px 12px;font-family:inherit;font-size:13px;resize:vertical"></textarea></div>
 <div class="wb-full"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="wb-label" style="margin:0">Exercises</span><button class="btn btn-sm btn-p" onclick="addEx()">+ Add</button></div><div id="exList"></div></div>
 <div class="wb-full" style="display:flex;gap:8px"><button class="btn btn-p btn-green" id="pubBtn" onclick="pubSess(true)" style="flex:1">Assign & Publish</button><button class="btn btn-p btn-warn" onclick="pubSess(false)" style="flex:1">Save to Library</button></div>
 <div id="wbMsg" class="msg" style="margin-top:8px"></div></div></div>`;renderEx()}
-function renderEx(){document.getElementById('exList').innerHTML=exercises.map((e,i)=>`<div class="ex-row"><button class="ex-remove" onclick="rmEx(${i})">✕</button><div class="ex-grid"><div><div class="ex-label">Exercise</div><input class="ex-input" value="${e.name}" onchange="exercises[${i}].name=this.value" placeholder="Squat"></div><div><div class="ex-label">Sets</div><input class="ex-input" value="${e.sets}" onchange="exercises[${i}].sets=this.value" placeholder="4"></div><div><div class="ex-label">Reps</div><input class="ex-input" value="${e.reps}" onchange="exercises[${i}].reps=this.value" placeholder="5"></div><div><div class="ex-label">Weight</div><input class="ex-input" value="${e.weight}" onchange="exercises[${i}].weight=this.value" placeholder="185 lbs"></div></div><div style="margin-top:8px"><div class="ex-label">Form Video</div><input class="ex-input" value="${e.videoLink||''}" onchange="exercises[${i}].videoLink=this.value" placeholder="YouTube URL"></div></div>`).join('')}
-function addEx(){exercises.push({name:'',sets:'',reps:'',weight:'',videoLink:''});renderEx()}
+function renderEx(){document.getElementById('exList').innerHTML=exercises.map((e,i)=>`<div class="ex-row"><button class="ex-remove" onclick="rmEx(${i})">✕</button><div class="ex-grid"><div><div class="ex-label">Exercise</div><input class="ex-input" value="${e.name}" onchange="exercises[${i}].name=this.value" placeholder="Squat"></div><div><div class="ex-label">Type</div><select class="ex-input" onchange="exercises[${i}].type=this.value"><option value="General" ${e.type==='General'?'selected':''}>General</option><option value="Mobility" ${e.type==='Mobility'?'selected':''}>Mobility</option><option value="Plyo" ${e.type==='Plyo'?'selected':''}>Plyo</option></select></div><div><div class="ex-label">Sets</div><input class="ex-input" value="${e.sets}" onchange="exercises[${i}].sets=this.value" placeholder="4"></div><div><div class="ex-label">Reps</div><input class="ex-input" value="${e.reps}" onchange="exercises[${i}].reps=this.value" placeholder="5"></div></div><div style="margin-top:8px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><div class="ex-label">Weight</div><input class="ex-input" value="${e.weight}" onchange="exercises[${i}].weight=this.value" placeholder="185 lbs"></div><div><div class="ex-label">Tempo</div><input class="ex-input" value="${e.tempo}" onchange="exercises[${i}].tempo=this.value" placeholder="3-1-2"></div></div></div><div style="margin-top:8px"><div class="ex-label">Form Video URL</div><input class="ex-input" value="${e.videoLink||''}" onchange="exercises[${i}].videoLink=this.value" placeholder="YouTube URL — saved 1x only"></div></div></div>`).join('')}
+function addEx(){exercises.push({name:'',type:'General',sets:'',reps:'',weight:'',tempo:'',videoLink:''});renderEx()}
 function rmEx(i){if(exercises.length>1){exercises.splice(i,1);renderEx()}}
 
 async function pubSess(assign){const title=document.getElementById('wbTitle').value.trim(),type=document.getElementById('wbType').value,cid=document.getElementById('wbClient').value,dow=parseInt(document.getElementById('wbDay').value),time=document.getElementById('wbTime').value,vid=document.getElementById('wbVideo').value.trim(),notes=document.getElementById('wbNotes').value.trim(),msg=document.getElementById('wbMsg');
 if(!title){msg.className='msg error vis';msg.textContent='Enter title.';return}if(!exercises.filter(e=>e.name.trim()).length){msg.className='msg error vis';msg.textContent='Add exercise.';return}if(assign&&!cid){msg.className='msg error vis';msg.textContent='Select client or Save to Library.';return}
 const btn=document.getElementById('pubBtn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
 const now=new Date();let td=new Date(now);td.setDate(now.getDate()+((dow-now.getDay()+7)%7||7));const[h,m]=time.split(':');td.setHours(+h,+m,0,0);
-try{await db.collection('scheduledSessions').add({coachId:CUR.uid,title,type,date:firebase.firestore.Timestamp.fromDate(td),time,timeDisplay:TIMES.find(t=>t.v===time)?.l||time,dayOfWeek:dow,dayName:DAYS[dow],duration:40,exercises:exercises.filter(e=>e.name.trim()).map(e=>({name:e.name.trim(),sets:e.sets,reps:e.reps,weight:e.weight,videoLink:e.videoLink||''})),coachNotes:notes,videoLink:vid,assignedClients:assign&&cid?[cid]:[],isPublished:assign&&!!cid,isCompleted:false,createdAt:TS()});
-msg.className='msg success vis';msg.textContent=assign?`"${title}" assigned!`:`"${title}" saved to Library.`;btn.disabled=false;btn.innerHTML='Assign & Publish';document.getElementById('wbTitle').value='';document.getElementById('wbNotes').value='';document.getElementById('wbVideo').value='';exercises=[{name:'',sets:'',reps:'',weight:'',videoLink:''}];renderEx();await loadCoachData()}catch(e){msg.className='msg error vis';msg.textContent=e.message;btn.disabled=false;btn.innerHTML='Assign & Publish'}}
+try{await db.collection('scheduledSessions').add({coachId:CUR.uid,title,type,date:firebase.firestore.Timestamp.fromDate(td),time,timeDisplay:TIMES.find(t=>t.v===time)?.l||time,dayOfWeek:dow,dayName:DAYS[dow],duration:40,exercises:exercises.filter(e=>e.name.trim()).map(e=>({name:e.name.trim(),type:e.type,sets:e.sets,reps:e.reps,weight:e.weight,tempo:e.tempo,videoLink:e.videoLink||''})),coachNotes:notes,videoLink:vid,assignedClients:assign&&cid?[cid]:[],isPublished:assign&&!!cid,isCompleted:false,createdAt:TS()});
+msg.className='msg success vis';msg.textContent=assign?`"${title}" assigned!`:`"${title}" saved to Library.`;btn.disabled=false;btn.innerHTML='Assign & Publish';document.getElementById('wbTitle').value='';document.getElementById('wbNotes').value='';document.getElementById('wbVideo').value='';exercises=[{name:'',type:'General',sets:'',reps:'',weight:'',tempo:'',videoLink:''}];renderEx();await loadCoachData()}catch(e){msg.className='msg error vis';msg.textContent=e.message;btn.disabled=false;btn.innerHTML='Assign & Publish'}}
 
 // ===== LIBRARY =====
 function buildLibraryTab(){const p=document.getElementById('panel-library');const un=allSessions.filter(s=>!s.assignedClients?.length);
 if(!un.length){p.innerHTML='<div class="card"><div class="card-t">Workout Library</div><div class="empty"><div class="empty-icon">📚</div><div class="empty-text">No saved workouts</div><div class="empty-sub">Use "Save to Library" when creating workouts</div></div></div>';return}
 p.innerHTML='<div class="card"><div class="card-t">Workout Library ('+un.length+')</div>'+un.map(s=>`<div class="sess-card"><div class="sess-hdr"><div><div class="sess-title">${s.title}</div><div class="sess-date">${s.dayName||''} · ${s.timeDisplay||''} · 40 min</div></div><span class="badge badge-y">Unassigned</span></div>
-<div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+<div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name} <span style="color:var(--acc);font-size:11px">(${e.type||'General'})</span></span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}${e.tempo?' · '+e.tempo:''}</span></div>`).join('')}</div>
 ${s.coachNotes?`<div class="sess-notes">💬 ${s.coachNotes}</div>`:''}
 <div class="sess-actions"><button class="btn btn-sm btn-p" onclick="openAssign('${s.id}','${s.title.replace(/'/g,"\\'")}')">Assign to Client</button><button class="btn btn-sm btn-out" onclick="delSess('${s.id}')">Delete</button></div></div>`).join('')+'</div>'}
 async function delSess(id){if(!confirm('Delete?'))return;try{await db.collection('scheduledSessions').doc(id).delete();await loadCoachData();buildLibraryTab()}catch(e){alert(e.message)}}
 
-// ASSIGN MODAL
 let assignId=null;
 async function openAssign(sid,title){assignId=sid;const sess=allSessions.find(s=>s.id===sid);const already=sess?.assignedClients||[];
 const modal=document.createElement('div');modal.className='modal-overlay';modal.innerHTML=`<div class="modal"><div class="modal-t"><span>Assign "${title}"</span><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
@@ -261,8 +244,8 @@ function buildCoachSchedule(){const p=document.getElementById('panel-schedule');
 if(!asgn.length){p.innerHTML='<div class="card"><div class="card-t">Scheduled Sessions</div><div class="empty"><div class="empty-icon">📅</div><div class="empty-text">No assigned sessions</div></div></div>';return}
 p.innerHTML='<div class="card"><div class="card-t">Scheduled Sessions ('+asgn.length+')</div>'+asgn.map(s=>{const names=s.assignedClients.map(cid=>{const c=allClients.find(x=>x.id===cid);return c?c.name||c.email:'?'}).join(', ');
 return`<div class="sess-card"><div class="sess-hdr"><div><div class="sess-title">${s.title}</div><div class="sess-date">${s.date?.toDate?s.date.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'TBD'}</div></div><div class="sess-time">${s.timeDisplay||s.time}</div></div>
-<div class="sess-assigned">Assigned to: <strong>${names}</strong></div>
-<div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+<div style="font-size:12px;color:var(--acc);margin-bottom:8px">Assigned to: <strong>${names}</strong></div>
+<div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name} <span style="color:var(--acc);font-size:11px">(${e.type||'General'})</span></span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}${e.tempo?' · '+e.tempo:''}</span></div>`).join('')}</div>
 ${s.coachNotes?`<div class="sess-notes">💬 ${s.coachNotes}</div>`:''}
 <div class="sess-actions"><button class="btn btn-sm btn-p" onclick="openAssign('${s.id}','${s.title.replace(/'/g,"\\'")}')">Edit Assignment</button></div></div>`}).join('')+'</div>'}
 
@@ -272,19 +255,16 @@ ${s.coachNotes?`<div class="sess-notes">💬 ${s.coachNotes}</div>`:''}
 
 // ===== CLIENT DASHBOARD =====
 async function buildClientDashboard(){const p=document.getElementById('panel-dashboard');
-// Today's session
 let todayHtml='<div class="today-sched"><div class="today-label">Today\'s Schedule</div><div class="today-title" style="color:var(--txt3)">No session scheduled today</div></div>';
 try{const snap=await db.collection('scheduledSessions').where('isPublished','==',true).get();const today=new Date();
 snap.forEach(doc=>{const s=doc.data();if(!s.assignedClients?.includes(CUR.uid))return;const sd=s.date?.toDate?s.date.toDate():null;if(sd&&sd.toDateString()===today.toDateString()){
 todayHtml=`<div class="today-sched" onclick="document.querySelector('[data-tab=schedule]').click()"><div class="today-label">Today's Schedule</div><div class="today-title">${s.title}</div><div class="today-time">${s.timeDisplay||s.time} · 40 min</div></div>`}})}catch(e){}
 
-// Monthly chart data
 let completed=0,missed=0,upcoming=0;
 try{const now=new Date();const monthStart=new Date(now.getFullYear(),now.getMonth(),1);
 const ps=await db.collection('clientProgress').where('clientId','==',CUR.uid).get();ps.forEach(d=>{const cd=d.data().completedAt?.toDate?d.data().completedAt.toDate():null;if(cd&&cd>=monthStart)completed++});
 const ss=await db.collection('scheduledSessions').where('isPublished','==',true).get();ss.forEach(d=>{const s=d.data();if(!s.assignedClients?.includes(CUR.uid))return;const sd=s.date?.toDate?s.date.toDate():null;if(!sd||sd<monthStart)return;if(s.isCompleted)return;if(sd<now)missed++;else upcoming++})}catch(e){}
 const total=completed+missed+upcoming||1;const cpct=Math.round(completed/total*100);
-
 const monthName=new Date().toLocaleDateString('en-US',{month:'long'});
 
 p.innerHTML=`${todayHtml}
@@ -313,14 +293,10 @@ ${qs.map(q=>`<div class="cap-q"><div class="cap-q-title">${q.label}</div><div st
 function setCapScore(key,val,btn){capAnswers[key]=val;btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel')}
 
 async function submitCapacity(){const a=capAnswers;if(!a.sleep||!a.soreness||!a.emotional||!a.focus||!a.energy||!a.trueCap){toast('Rate all 6 areas first.');return}
-// Weighted scoring: trueCap=3x, emotional=2.5x, sleep=2x, energy=1.5x, focus=1x, soreness=1x
 const score=a.trueCap*3+a.emotional*2.5+a.sleep*2+a.energy*1.5+a.focus*1+a.soreness*1;
 let zone='green';
-// Protection Rule 1: TRUE CAPACITY 1-2 = RED
 if(a.trueCap<=2)zone='red';
-// Protection Rule 2: Emotional=5 + Sleep<=2 = capped at YELLOW (fake readiness)
 else if(a.emotional>=5&&a.sleep<=2)zone=score>=40?'yellow':(score>=25?'yellow':'red');
-// Normal scoring
 else if(score>=40)zone='green';else if(score>=25)zone='yellow';else zone='red';
 
 const msgs={green:{title:'🟢 GREEN ZONE: Full Capacity',msg:'You\'re aligned — mind and body are ready. Push with purpose today. Trust your training, honor your strength, and leave nothing on the table.'},
@@ -335,7 +311,6 @@ el.innerHTML=`<div class="cap-result ${zone}"><div class="cap-zone">${msgs[zone]
 <div class="pill-group">${pills[zone].map(p=>`<button class="pill ${zone}" onclick="selectPill(this,${multi})">${p}</button>`).join('')}</div>
 <button class="btn btn-p" style="margin-top:16px;max-width:300px;margin-left:auto;margin-right:auto" onclick="saveCapacity('${zone}')">Log Today's Capacity</button></div>`;
 
-// Save to Firestore
 try{await db.collection('capacityCheckins').doc(CUR.uid+'_'+todayStr()).set({clientId:CUR.uid,date:todayStr(),scores:a,weightedScore:score,zone,timestamp:TS()})}catch(e){console.error(e)}}
 
 function selectPill(btn,multi){if(!multi){btn.parentElement.querySelectorAll('.pill').forEach(p=>p.classList.remove('sel'))}btn.classList.toggle('sel')}
@@ -377,13 +352,13 @@ document.getElementById('guidesList').innerHTML=h}catch(e){}}
 
 // ===== PROGRAMS TAB =====
 async function buildProgramsTab(){const p=document.getElementById('panel-programs');
-try{const snap=await db.collection('scheduledSessions').where('isPublished','==',true).get();let assigned=[];snap.forEach(d=>{const s=d.data();if(s.assignedClients?.includes(CUR.uid))assigned.push({id:d.id,...s})});
+try{const snap=await db.collection('scheduledSessions').where('assignedClients','array-contains',CUR.uid).get();let assigned=[];snap.forEach(d=>{assigned.push({id:d.id,...d.data()})});
 if(!assigned.length){p.innerHTML='<div class="card"><div class="card-t">My Programs</div><div class="empty"><div class="empty-icon">🏋️</div><div class="empty-text">No programs assigned yet</div><div class="empty-sub">Your coach will assign workouts to you</div></div></div>';return}
-p.innerHTML='<div class="card"><div class="card-t">My Programs</div>'+assigned.map(s=>`<div class="sess-card">
+p.innerHTML='<div class="card"><div class="card-t">My Programs ('+assigned.length+')</div>'+assigned.map(s=>`<div class="sess-card">
 <div class="sess-hdr"><div><div class="sess-title">${s.title}</div><div class="sess-date">${s.dayName||''} · ${s.timeDisplay||''}</div></div><span class="badge ${s.isCompleted?'badge-g':'badge-b'}">${s.isCompleted?'✓ Complete':'Upcoming'}</span></div>
-<div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name}</span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}</span></div>`).join('')}</div>
+<div class="sess-ex">${(s.exercises||[]).map(e=>`<div class="sess-ex-row"><span class="sess-ex-name">${e.name} <span style="color:var(--acc);font-size:11px">(${e.type||'General'})</span></span><span class="sess-ex-detail">${e.sets?e.sets+'x':''}${e.reps||''} ${e.weight?'@ '+e.weight:''}${e.tempo?' · '+e.tempo:''}</span></div>`).join('')}</div>
 ${s.coachNotes?`<div class="sess-notes">💬 Coach: ${s.coachNotes}</div>`:''}
-${!s.isCompleted?`<div class="sess-actions"><button class="btn btn-sm btn-p btn-green" onclick="markDone('${s.id}')">Mark Complete</button></div>`:''}</div>`).join('')+'</div>'}catch(e){p.innerHTML='<div class="card"><div class="empty"><div class="empty-text">Error: '+e.message+'</div></div></div>'}}
+${!s.isCompleted?`<div class="sess-actions"><button class="btn btn-sm btn-p btn-green" onclick="markDone('${s.id}')">Mark Complete</button></div>`:''}</div>`).join('')+'</div>'}catch(e){p.innerHTML='<div class="card"><div class="empty"><div class="empty-text">Error loading programs</div></div></div>'}}
 
 async function markDone(sid){if(!confirm('Mark complete?'))return;try{const d=await db.collection('scheduledSessions').doc(sid).get();const s=d.data();
 await db.collection('clientProgress').add({clientId:CUR.uid,coachId:s.coachId,sessionId:sid,title:s.title,exercises:s.exercises||[],coachNotes:s.coachNotes||'',capacityLevel:'green',completedAt:TS()});
@@ -396,8 +371,7 @@ p.innerHTML=`<div class="sched-view-toggle"><button class="sv-btn on" onclick="s
 <div id="schedContent"></div><button class="add-sched-btn" onclick="openBookModal()">+</button>`;renderClientSched()}
 
 async function renderClientSched(){const el=document.getElementById('schedContent');const now=new Date();
-try{const snap=await db.collection('scheduledSessions').where('isPublished','==',true).get();let mysess=[];snap.forEach(d=>{const s=d.data();if(s.assignedClients?.includes(CUR.uid))mysess.push({id:d.id,...s})});
-// Also get booked slots
+try{const snap=await db.collection('scheduledSessions').where('assignedClients','array-contains',CUR.uid).get();let mysess=[];snap.forEach(d=>{mysess.push({id:d.id,...d.data()})});
 const bookSnap=await db.collection('bookedSlots').where('clientId','==',CUR.uid).get();let booked=[];bookSnap.forEach(d=>booked.push({id:d.id,...d.data()}));
 
 if(schedView==='daily'){const todayD=now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -415,29 +389,23 @@ h+=`<div class="day-card"><div class="day-card-hdr"><div class="day-card-date">$
 if(daySess.length)daySess.forEach(s=>{h+=`<div class="day-card-session"><strong>${s.title}</strong> · ${s.timeDisplay} · 40 min</div>`});
 if(dayBooks.length)dayBooks.forEach(b=>{h+=`<div class="day-card-session" style="margin-top:4px">📅 ${b.timeDisplay} — awaiting assignment</div>`});
 if(!daySess.length&&!dayBooks.length)h+='<div style="font-size:12px;color:var(--txt3);padding:4px 0">—</div>';
-h+='</div>'}el.innerHTML=h}}catch(e){el.innerHTML='<div class="empty"><div class="empty-text">Error: '+e.message+'</div></div>'}}
+h+='</div>'}el.innerHTML=h}}catch(e){el.innerHTML='<div class="empty"><div class="empty-text">Error loading schedule</div></div>'}}
 
-// BOOK SESSION MODAL
 async function openBookModal(){
-// Load coach availability
 let avail={};
 try{const coaches=await db.collection('users').where('accountType','==','coach').get();let coachId=null;coaches.forEach(d=>coachId=d.id);
 if(coachId){const ad=await db.collection('coachAvailability').doc(coachId).get();if(ad.exists)avail=ad.data().slots||{}}}catch(e){}
 
-// Load all booked slots to block conflicts
 let takenSlots=[];
 try{const bs=await db.collection('bookedSlots').get();bs.forEach(d=>takenSlots.push(d.data()))}catch(e){}
 
-// Build available days (next 14 days)
 let daysHtml='';const now=new Date();
 for(let i=1;i<=14;i++){const d=new Date(now);d.setDate(now.getDate()+i);const dow=d.getDay();
-if(!avail[dow])continue;// Coach not available this day
+if(!avail[dow]||!avail[dow].length)continue;
 const dateStr=d.toISOString().split('T')[0];const dateLabel=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-
-// Generate time slots within coach availability
-const from=avail[dow].from,to=avail[dow].to;
-let slotHtml='';TIMES.forEach(t=>{if(t.v>=from&&t.v<to){const taken=takenSlots.find(ts=>ts.date===dateStr&&ts.time===t.v);
-slotHtml+=`<button class="btn btn-sm ${taken?'btn-s':'btn-p'}" style="margin:3px;${taken?'opacity:.4;cursor:not-allowed':''}" ${taken?'disabled':''} onclick="bookSlot('${dateStr}','${t.v}','${t.l}','${dateLabel}')">${t.l}${taken?' (taken)':''}</button>`}});
+let slotHtml='';
+avail[dow].forEach(slot=>{const from=slot.from,to=slot.to;TIMES.forEach(t=>{if(t.v>=from&&t.v<to){const taken=takenSlots.find(ts=>ts.date===dateStr&&ts.time===t.v);
+slotHtml+=`<button class="btn btn-sm ${taken?'btn-s':'btn-p'}" style="margin:3px;${taken?'opacity:.4;cursor:not-allowed':''}" ${taken?'disabled':''} onclick="bookSlot('${dateStr}','${t.v}','${t.l}','${dateLabel}')">${t.l}${taken?' (taken)':''}</button>`}})});
 if(slotHtml)daysHtml+=`<div style="margin-bottom:16px"><div style="font-weight:600;font-size:14px;color:var(--pri);margin-bottom:8px">${dateLabel}</div><div style="display:flex;flex-wrap:wrap">${slotHtml}</div></div>`}
 
 const modal=document.createElement('div');modal.className='modal-overlay';
@@ -447,8 +415,7 @@ ${daysHtml||'<div class="empty"><div class="empty-text">No available slots</div>
 </div>`;document.body.appendChild(modal)}
 
 async function bookSlot(date,time,timeDisplay,dateLabel){
-try{// Check one more time for conflicts
-const existing=await db.collection('bookedSlots').where('date','==',date).where('time','==',time).get();
+try{const existing=await db.collection('bookedSlots').where('date','==',date).where('time','==',time).get();
 if(!existing.empty){alert('This slot was just taken. Please choose another.');return}
 await db.collection('bookedSlots').add({clientId:CUR.uid,clientName:CDATA.name||CUR.email,date,time,timeDisplay,dateLabel,createdAt:TS()});
 document.querySelector('.modal-overlay')?.remove();toast('Session booked: '+dateLabel+' '+timeDisplay);renderClientSched()}catch(e){alert('Error: '+e.message)}}
@@ -456,7 +423,6 @@ document.querySelector('.modal-overlay')?.remove();toast('Session booked: '+date
 // ===== MESSAGES TAB =====
 function buildMessagesTab(){document.getElementById('panel-messages').innerHTML=`<div class="card"><div class="card-t">Messages</div><div class="empty"><div class="empty-icon">💬</div><div class="empty-text">Messaging coming soon</div><div class="empty-sub">Direct chat with your coach — launching in the next update</div></div></div>`}
 
-// ENTER KEY
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('authScreen').style.display!=='none'){if(!document.getElementById('loginForm').classList.contains('hidden'))handleLogin();else handleSignup()}});
 </script>
 </body>
