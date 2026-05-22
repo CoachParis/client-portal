@@ -237,7 +237,7 @@ firebase.initializeApp({
 });
 const auth=firebase.auth(), db=firebase.firestore();
 const SESSION_MS=2*60*60*1000;
-let lastAct=Date.now(),tmrInt=null,CUR_USER=null,CUR_DATA=null;
+let lastAct=Date.now(),tmrInt=null,CUR_USER=null,CUR_DATA=null,exercises=[];
 
 // ===== DEVICE ID =====
 function devId(){let i=localStorage.getItem('siss_dev');if(!i){i='d_'+Math.random().toString(36).substr(2,10)+'_'+Date.now();localStorage.setItem('siss_dev',i)}return i}
@@ -370,14 +370,27 @@ async function loadClients(){
         let html='';
         snap.forEach(d=>{const c=d.data();html+=`<div class="cl-row"><div><div class="cl-name">${c.name||'Unnamed'}</div><div class="cl-email">${c.email}</div></div><span class="badge badge-g">Active</span></div>`});
         el.innerHTML=html;
-    }catch(e){document.getElementById('clientList').innerHTML='<div class="empty"><div class="empty-text">Error loading clients</div></div>'}
+    }catch(e){console.error('Client load error:',e);document.getElementById('clientList').innerHTML='<div class="empty"><div class="empty-text">Error loading clients: '+e.message+'</div></div>'}
 }
 
 // ===== WORKOUT BUILDER =====
-let exercises=[];
-function buildWorkoutCreator(){
+async function buildWorkoutCreator(){
     exercises=[{name:'',sets:'',reps:'',weight:'',videoLink:''}];
     const p=document.getElementById('panel-builder');
+    
+    // Load clients first
+    let clientOptions = '<option value="">All Clients</option>';
+    try {
+        const snap = await db.collection('users').where('accountType','==','client').get();
+        snap.forEach(d => {
+            const c = d.data();
+            clientOptions += `<option value="${d.id}">${c.name || c.email}</option>`;
+        });
+    } catch(e) {
+        console.error('Client load error:', e);
+        clientOptions += '<option value="">Error loading clients</option>';
+    }
+    
     p.innerHTML=`
         <div class="card">
             <div class="card-t">Create Workout Session</div>
@@ -387,8 +400,8 @@ function buildWorkoutCreator(){
                     <div><label class="wb-label">Session Type</label><select class="wb-input" id="wbType"><option value="workout">Workout</option><option value="live-training">Live Training</option><option value="form-review">Form Review</option></select></div>
                 </div>
                 <div class="wb-row">
-                    <div><label class="wb-label">Assign To</label><select class="wb-input" id="wbClient"><option value="">Loading clients...</option></select></div>
-                    <div><label class="wb-label">Duration (minutes)</label><input class="wb-input" id="wbDuration" type="number" value="60" min="15" step="15"></div>
+                    <div><label class="wb-label">Assign To</label><select class="wb-input" id="wbClient">${clientOptions}</select></div>
+                    <div><label class="wb-label">Duration</label><select class="wb-input" id="wbDuration"><option value="40">40 minutes (Standard)</option></select></div>
                 </div>
                 <div class="wb-row">
                     <div><label class="wb-label">Day</label><select class="wb-input" id="wbDay">${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select></div>
@@ -404,7 +417,6 @@ function buildWorkoutCreator(){
             </div>
         </div>`;
     renderExercises();
-    loadClientDropdown();
 }
 
 function renderExercises(){
@@ -424,20 +436,11 @@ function renderExercises(){
 function addExercise(){exercises.push({name:'',sets:'',reps:'',weight:'',videoLink:''});renderExercises()}
 function removeExercise(i){if(exercises.length>1){exercises.splice(i,1);renderExercises()}}
 
-async function loadClientDropdown(){
-    try{
-        const snap=await db.collection('users').where('accountType','==','client').get();
-        const sel=document.getElementById('wbClient');
-        sel.innerHTML='<option value="all">All Clients</option>';
-        snap.forEach(d=>{const c=d.data();sel.innerHTML+=`<option value="${d.id}">${c.name||c.email}</option>`});
-    }catch(e){console.error(e)}
-}
-
 async function publishSession(){
     const title=document.getElementById('wbTitle').value.trim();
     const type=document.getElementById('wbType').value;
     const clientId=document.getElementById('wbClient').value;
-    const duration=parseInt(document.getElementById('wbDuration').value)||60;
+    const duration=40; // Fixed 40-minute sessions
     const dayOfWeek=parseInt(document.getElementById('wbDay').value);
     const time=document.getElementById('wbTime').value;
     const videoLink=document.getElementById('wbVideo').value.trim();
@@ -607,8 +610,11 @@ async function loadSchedule(){
 
     try{
         let query;
-        if(isCoach){query=db.collection('scheduledSessions').where('coachId','==',CUR_USER.uid).where('isCompleted','==',false).orderBy('date','asc')}
-        else{query=db.collection('scheduledSessions').where('isPublished','==',true).where('isCompleted','==',false).orderBy('date','asc')}
+        if(isCoach){
+            query=db.collection('scheduledSessions').where('coachId','==',CUR_USER.uid);
+        }else{
+            query=db.collection('scheduledSessions').where('isPublished','==',true);
+        }
 
         const snap=await query.get();
         if(snap.empty){el.innerHTML=`<div class="empty"><div class="empty-icon">📅</div><div class="empty-text">${isCoach?'No sessions scheduled yet':'No workouts scheduled yet'}</div><div class="empty-sub">${isCoach?'Go to Create Workout to build one':'Your coach will schedule your workouts'}</div></div>`;return}
@@ -616,8 +622,10 @@ async function loadSchedule(){
         let html='';
         snap.forEach(doc=>{
             const s=doc.data();
-            // For clients, filter to only their assigned sessions
-            if(!isCoach && s.assignedClients && s.assignedClients.length>0 && !s.assignedClients.includes(CUR_USER.uid))return;
+            // For clients, filter to only their assigned sessions (or all if no assignments)
+            if(!isCoach){
+                if(s.assignedClients && s.assignedClients.length>0 && !s.assignedClients.includes(CUR_USER.uid))return;
+            }
 
             const dateStr=s.date?.toDate?s.date.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}):'TBD';
             html+=`<div class="sess-card">
@@ -668,12 +676,17 @@ async function loadProgram(){
     el.innerHTML='<div class="empty"><div class="empty-text">Loading...</div></div>';
 
     try{
-        const snap=await db.collection('clientProgress').where('clientId','==',CUR_USER.uid).orderBy('completedAt','desc').get();
+        const snap=await db.collection('clientProgress').where('clientId','==',CUR_USER.uid).get();
         if(snap.empty){el.innerHTML='<div class="empty"><div class="empty-icon">💪</div><div class="empty-text">No completed workouts yet</div><div class="empty-sub">Workouts you complete will appear here as your program history</div></div>';return}
 
+        // Sort by completedAt (client-side since we removed orderBy)
+        let docs=[];
+        snap.forEach(d=>docs.push({id:d.id,data:d.data()}));
+        docs.sort((a,b)=>(b.data.completedAt?.toDate?.().getTime() || 0)-(a.data.completedAt?.toDate?.().getTime() || 0));
+
         let html='';
-        snap.forEach(doc=>{
-            const p=doc.data();
+        docs.forEach(doc=>{
+            const p=doc.data;
             const dateStr=p.completedAt?.toDate?p.completedAt.toDate().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Unknown';
             html+=`<div class="sess-card">
                 <div class="sess-hdr"><div><div class="sess-title">✓ ${p.title}</div><div class="sess-date">Completed: ${dateStr}</div></div><span class="badge badge-g">${p.capacityLevel==='green'?'🟢 Green':p.capacityLevel==='yellow'?'🟡 Yellow':'🔴 Red'}</span></div>
