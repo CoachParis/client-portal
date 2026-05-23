@@ -392,17 +392,53 @@ var mealData=[0,0,0,0,0,0],waterOz=0;
 function buildTrackerTab(){var p=document.getElementById('panel-tracker');
 var dateLabel=new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
 var meals=['Meal 1','Meal 2','Meal 3','Meal 4','Meal 5','Meal 6'];
-var mealH='';meals.forEach(function(m,i){mealH+='<div class="meal-slot"><div class="meal-name">'+m+'</div><div class="meal-btns"><button class="meal-btn" onclick="setMeal('+i+',\'check\',this)" title="Compliant">\u2714</button><button class="meal-btn" onclick="setMeal('+i+',\'x\',this)" title="Non-Compliant">\u2715</button><button class="meal-btn" onclick="setMeal('+i+',\'miss\',this)" title="Missed">\u2014</button></div></div>'});
-p.innerHTML='<div class="card"><div class="card-t">Meal Adherence \u2014 '+dateLabel+'</div><div class="card-c" style="margin-bottom:14px">\u2714 Compliant &nbsp; \u2715 Non-Compliant &nbsp; \u2014 Missed</div>'+mealH+'<div style="margin-top:16px;margin-bottom:12px"><div style="font-weight:600;font-size:14px;margin-bottom:10px">\uD83D\uDCA7 Water Intake</div><div class="water-track"><div style="text-align:center"><div class="water-oz" id="waterDisplay">'+waterOz+'</div><div class="water-label">ounces</div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;gap:12px"><button class="water-minus" onclick="adjWater(-8)">\u2212</button><span style="font-size:13px;color:#1565C0;font-weight:500">8 oz per tap</span><button class="water-plus" onclick="adjWater(8)">+</button></div></div></div><button class="btn btn-p" style="margin-top:12px" onclick="saveMealLog()">Save Meal Log</button><div id="mealMsg" class="msg" style="margin-top:8px"></div></div><div class="card"><div class="card-t">Food Diary \u2014 '+dateLabel+'</div><div id="foodEntries"><div class="food-entry"><input class="wb-input" placeholder="What did you eat/drink?" id="food0"></div></div><button class="btn btn-sm btn-s" onclick="addFoodEntry()" style="margin-top:8px;width:auto">+ Add Entry</button><button class="btn btn-p" style="margin-top:12px" onclick="saveFoodDiary()">Save Food Diary</button><div id="foodMsg" class="msg" style="margin-top:8px"></div></div>';
+var mealH='';meals.forEach(function(m,i){mealH+='<div class="meal-slot"><div class="meal-name">'+m+'</div><div class="meal-btns"><button class="meal-btn" id="mb-'+i+'-check" onclick="setMeal('+i+',\'check\',this)" title="Compliant">\u2714</button><button class="meal-btn" id="mb-'+i+'-x" onclick="setMeal('+i+',\'x\',this)" title="Non-Compliant">\u2715</button><button class="meal-btn" id="mb-'+i+'-miss" onclick="setMeal('+i+',\'miss\',this)" title="Missed">\u2014</button></div></div>'});
+p.innerHTML='<div class="card"><div class="card-t">Meal Adherence \u2014 '+dateLabel+'</div><div class="card-c" style="margin-bottom:14px">\u2714 Compliant &nbsp;\u2715 Non-Compliant &nbsp;\u2014 Missed</div>'+mealH+'<div id="mealSummary" style="margin-top:12px;padding:12px;background:var(--bg2);border-radius:8px;font-size:13px;color:var(--txt2)">Log your meals to see summary.</div><div style="margin-top:16px;margin-bottom:12px"><div style="font-weight:600;font-size:14px;margin-bottom:10px">\uD83D\uDCA7 Water Intake</div><div class="water-track"><div style="text-align:center"><div class="water-oz" id="waterDisplay">'+waterOz+'</div><div class="water-label">ounces today</div></div><div style="flex:1;display:flex;align-items:center;justify-content:center;gap:12px"><button class="water-minus" onclick="adjWater(-8)">\u2212</button><span style="font-size:13px;color:#1565C0;font-weight:500">8 oz per tap</span><button class="water-plus" onclick="adjWater(8)">+</button></div></div></div><button class="btn btn-p" style="margin-top:12px" onclick="saveMealLog()">Save Meal Log</button><div id="mealMsg" class="msg" style="margin-top:8px"></div></div><div class="card"><div class="card-t">Food Diary \u2014 '+dateLabel+'</div><div id="foodEntries"><div class="food-entry"><input class="wb-input" placeholder="What did you eat/drink?" id="food0"></div></div><button class="btn btn-sm btn-s" onclick="addFoodEntry()" style="margin-top:8px;width:auto">+ Add Entry</button><button class="btn btn-p" style="margin-top:12px" onclick="saveFoodDiary()">Save Food Diary</button><div id="foodMsg" class="msg" style="margin-top:8px"></div></div>';
 loadMealLog()}
 
-function setMeal(i,type,btn){mealData[i]=type;btn.parentElement.querySelectorAll('.meal-btn').forEach(function(b){b.classList.remove('check','x','miss')});btn.classList.add(type)}
-function adjWater(amt){waterOz=Math.max(0,waterOz+amt);document.getElementById('waterDisplay').textContent=waterOz}
-function saveMealLog(){db.collection('mealAdherence').doc(CUR.uid+'_'+todayStr()).set({clientId:CUR.uid,date:todayStr(),meals:mealData,waterOz:waterOz,timestamp:TS()}).then(function(){var m=document.getElementById('mealMsg');m.className='msg success vis';m.textContent='Meal log saved!'}).catch(function(e){var m=document.getElementById('mealMsg');m.className='msg error vis';m.textContent=e.message})}
-function loadMealLog(){db.collection('mealAdherence').doc(CUR.uid+'_'+todayStr()).get().then(function(d){if(d.exists){mealData=d.data().meals||[0,0,0,0,0,0];waterOz=d.data().waterOz||0;document.getElementById('waterDisplay').textContent=waterOz;mealData.forEach(function(v,i){if(v){var btns=document.querySelectorAll('.meal-slot')[i];if(btns){var bs=btns.querySelectorAll('.meal-btn');bs.forEach(function(b){b.classList.remove('check','x','miss')});if(v==='check')bs[0].classList.add('check');else if(v==='x')bs[1].classList.add('x');else if(v==='miss')bs[2].classList.add('miss')}}})}}).catch(function(){})}
-var foodCount=1;function addFoodEntry(){var el=document.getElementById('foodEntries');var div=document.createElement('div');div.className='food-entry';div.innerHTML='<input class="wb-input" placeholder="What did you eat/drink?" id="food'+foodCount+'">';el.appendChild(div);foodCount++}
+function setMeal(i,type,btn){mealData[i]=type;btn.parentElement.querySelectorAll('.meal-btn').forEach(function(b){b.classList.remove('check','x','miss')});btn.classList.add(type);updateMealSummary()}
+
+function updateMealSummary(){
+var comp=mealData.filter(function(v){return v==='check'}).length;
+var nc=mealData.filter(function(v){return v==='x'}).length;
+var miss=mealData.filter(function(v){return v==='miss'}).length;
+var logged=comp+nc+miss;
+var el=document.getElementById('mealSummary');if(!el)return;
+var pct=logged?Math.round(comp/logged*100):0;
+el.innerHTML='<strong>'+logged+' of 6 meals logged</strong> &nbsp;\u00B7&nbsp; \u2714 '+comp+' compliant &nbsp;\u00B7&nbsp; \u2715 '+nc+' non-compliant &nbsp;\u00B7&nbsp; \u2014 '+miss+' missed'+(logged?'<div style="margin-top:8px;background:var(--bdr);border-radius:4px;height:6px"><div style="background:var(--ok);height:100%;border-radius:4px;width:'+pct+'%;transition:width .3s"></div></div>':'')+'<div style="margin-top:4px;font-size:11px;color:var(--txt3)">Compliance: '+pct+'% &nbsp;\u00B7&nbsp; \uD83D\uDCA7 '+waterOz+' oz water</div>'
+}
+
+function adjWater(amt){waterOz=Math.max(0,waterOz+amt);document.getElementById('waterDisplay').textContent=waterOz;updateMealSummary()}
+
+function saveMealLog(){
+db.collection('mealAdherence').doc(CUR.uid+'_'+todayStr()).set({clientId:CUR.uid,date:todayStr(),meals:mealData,waterOz:waterOz,timestamp:TS()},{merge:true})
+.then(function(){var m=document.getElementById('mealMsg');m.className='msg success vis';m.textContent='\u2714 Meal log saved! '+mealData.filter(function(v){return v==='check'}).length+' compliant meals, '+waterOz+'oz water.';setTimeout(function(){m.classList.remove('vis')},4000)})
+.catch(function(e){var m=document.getElementById('mealMsg');m.className='msg error vis';m.textContent='Error saving: '+e.message})}
+
+function loadMealLog(){
+db.collection('mealAdherence').doc(CUR.uid+'_'+todayStr()).get()
+.then(function(d){
+if(d.exists){
+mealData=d.data().meals||[0,0,0,0,0,0];
+waterOz=d.data().waterOz||0;
+var el=document.getElementById('waterDisplay');if(el)el.textContent=waterOz;
+mealData.forEach(function(v,i){
+if(v){
+var check=document.getElementById('mb-'+i+'-check');
+var x=document.getElementById('mb-'+i+'-x');
+var miss=document.getElementById('mb-'+i+'-miss');
+if(check&&x&&miss){check.classList.remove('check','x','miss');x.classList.remove('check','x','miss');miss.classList.remove('check','x','miss');
+if(v==='check')check.classList.add('check');
+else if(v==='x')x.classList.add('x');
+else if(v==='miss')miss.classList.add('miss')}
+}});
+updateMealSummary()}
+}).catch(function(e){console.error('loadMealLog error:',e)})}
+
+var foodCount=1;
+function addFoodEntry(){var el=document.getElementById('foodEntries');var div=document.createElement('div');div.className='food-entry';div.innerHTML='<input class="wb-input" placeholder="What did you eat/drink?" id="food'+foodCount+'">';el.appendChild(div);foodCount++}
 function saveFoodDiary(){var entries=[];for(var i=0;i<foodCount;i++){var inp=document.getElementById('food'+i);if(inp&&inp.value.trim())entries.push(inp.value.trim())}if(!entries.length){var m=document.getElementById('foodMsg');m.className='msg error vis';m.textContent='Add at least one entry.';return}
-db.collection('foodDiary').doc(CUR.uid+'_'+todayStr()).set({clientId:CUR.uid,date:todayStr(),entries:entries,timestamp:TS()}).then(function(){var m=document.getElementById('foodMsg');m.className='msg success vis';m.textContent='Food diary saved!'}).catch(function(e){var m=document.getElementById('foodMsg');m.className='msg error vis';m.textContent=e.message})}
+db.collection('foodDiary').doc(CUR.uid+'_'+todayStr()).set({clientId:CUR.uid,date:todayStr(),entries:entries,timestamp:TS()},{merge:true}).then(function(){var m=document.getElementById('foodMsg');m.className='msg success vis';m.textContent='\u2714 Food diary saved! '+entries.length+' entries logged.'}).catch(function(e){var m=document.getElementById('foodMsg');m.className='msg error vis';m.textContent='Error saving: '+e.message})}
 
 // ===== GUIDES =====
 function buildGuidesTab(){document.getElementById('panel-guides').innerHTML='<div class="card"><div class="card-t">SISS Method Guides</div><div class="empty"><div class="empty-icon">\uD83D\uDCD6</div><div class="empty-text">Guides coming soon</div></div></div>'}
