@@ -93,12 +93,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line
 .add-sched-btn{width:48px;height:48px;border-radius:50%;background:var(--pri);color:#fff;border:none;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;position:fixed;bottom:24px;right:24px;box-shadow:0 4px 12px rgba(115,74,90,.4);z-index:100;transition:all .2s}.add-sched-btn:hover{transform:scale(1.1)}
 /* AVAILABILITY */
 .avail-day{margin-bottom:16px;border:1px solid var(--bdr);border-radius:10px;padding:16px;background:#fff}
-.avail-day-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.avail-day-name{font-weight:700;font-size:14px;color:var(--pri)}
-.avail-slot-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:var(--bg2);border-radius:6px}
+.avail-day-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.avail-day-name{font-weight:700;font-size:14px;color:var(--pri)}.avail-day-date{font-size:11px;color:var(--txt3)}.avail-slot-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px 12px;background:var(--bg2);border-radius:6px}
 .avail-sel{padding:7px 8px;border:1px solid var(--bdr);border-radius:5px;font-family:inherit;font-size:12px;background:#fff}
 .avail-sep{color:var(--txt3);font-size:12px;font-weight:500}
 .avail-rm{background:none;border:none;color:var(--err);cursor:pointer;font-size:16px;font-weight:700;padding:0 4px}.avail-rm:hover{color:#B71C1C}
-.avail-add{background:none;border:2px dashed var(--bdr);border-radius:6px;padding:8px;width:100%;cursor:pointer;color:var(--pri);font-size:13px;font-weight:500;font-family:inherit;text-align:center;transition:all .2s}.avail-add:hover{border-color:var(--pri);background:rgba(115,74,90,.05)}
+.avail-add{background:none;border:2px dashed var(--bdr);border-radius:6px;padding:8px;width:100%;cursor:pointer;color:var(--pri);font-size:13px;font-weight:500;font-family:inherit;text-align:center;transition:all .2s;margin-bottom:8px}.avail-add:hover{border-color:var(--pri);background:rgba(115,74,90,.05)}
+.copy-btns{display:flex;gap:8px;margin-top:8px}.copy-btns button{flex:1;padding:6px 10px;font-size:12px}
 /* MODAL */
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
 .modal{background:#fff;border-radius:12px;padding:28px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -130,7 +130,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);line
 .chart-wrap svg{transform:rotate(-90deg)}.chart-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
 .chart-pct{font-size:28px;font-weight:700;color:var(--pri)}.chart-label{font-size:11px;color:var(--txt2)}
 .food-entry{display:flex;gap:8px;margin-bottom:8px}.food-entry input{flex:1}
-@media(max-width:600px){.ex-row .ex-grid{grid-template-columns:1fr 1fr}.wb-row{grid-template-columns:1fr}.igrid3{grid-template-columns:1fr}.nav-tab{padding:10px 10px;font-size:11px}.main{padding:16px}.top-bar{padding:10px 16px}.chart-wrap{width:130px;height:130px}.cap-card{padding:10px 0;font-size:13px}}
+@media(max-width:600px){.ex-row .ex-grid{grid-template-columns:1fr 1fr}.wb-row{grid-template-columns:1fr}.igrid3{grid-template-columns:1fr}.nav-tab{padding:10px 10px;font-size:11px}.main{padding:16px}.top-bar{padding:10px 16px}.chart-wrap{width:130px;height:130px}.cap-card{padding:10px 0;font-size:13px}.copy-btns{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -155,6 +155,7 @@ const TIMES=[];for(let h=5;h<=21;h++)for(let m=0;m<60;m+=15){const hr=h>12?h-12:
 function devId(){let i=localStorage.getItem('siss_dev');if(!i){i='d_'+Math.random().toString(36).substr(2,10)+'_'+Date.now();localStorage.setItem('siss_dev',i)}return i}
 function timeAgo(d){const s=Math.floor((Date.now()-d.getTime())/1000);if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
 function todayStr(){return new Date().toISOString().split('T')[0]}
+function getDateLabel(daysFromNow){const d=new Date();d.setDate(d.getDate()+daysFromNow);return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}
 
 // AUTH
 auth.onAuthStateChanged(async u=>{if(u){try{const d=await db.collection('users').doc(u.uid).get();CUR=u;CDATA=d.exists?d.data():{accountType:'client',name:'',email:u.email};showShell()}catch(e){CUR=u;CDATA={accountType:'client'};showShell()}}else showAuth()});
@@ -198,33 +199,30 @@ p.innerHTML=`<div class="banner"><h2>Welcome Back, Coach</h2><p>Manage your clie
 loadAvailability()}
 
 async function loadAvailability(){try{const d=await db.collection('coachAvailability').doc(CUR.uid).get();if(d.exists)coachAvail=d.data().slots||{}}catch(e){console.log('Avail load:',e)}renderAvailability()}
+
 function renderAvailability(){const el=document.getElementById('coachAvail');if(!el)return;let html='';
-for(let dow=0;dow<7;dow++){const slots=coachAvail[dow]||[];
-html+=`<div class="avail-day"><div class="avail-day-hdr"><div class="avail-day-name">${DAYS[dow]}</div><span style="font-size:12px;color:var(--txt3)">${slots.length?slots.length+' slot(s)':'Off'}</span></div>`;
+for(let dow=0;dow<7;dow++){const slots=coachAvail[dow]||[];const dateLabel=getDateLabel(dow-new Date().getDay());
+html+=`<div class="avail-day"><div class="avail-day-hdr"><div><div class="avail-day-name">${DAYS[dow]}</div><div class="avail-day-date">${dateLabel}</div></div><span style="font-size:12px;color:var(--txt3)">${slots.length?slots.length+' slot(s)':'Off'}</span></div>`;
 if(slots.length){slots.forEach((slot,idx)=>{html+=`<div class="avail-slot-row"><select class="avail-sel" onchange="updateSlot(${dow},${idx},'from',this.value)">${TIMES.map(t=>`<option value="${t.v}" ${slot.from===t.v?'selected':''}>${t.l}</option>`).join('')}</select>
 <span class="avail-sep">to</span>
 <select class="avail-sel" onchange="updateSlot(${dow},${idx},'to',this.value)">${TIMES.map(t=>`<option value="${t.v}" ${slot.to===t.v?'selected':''}>${t.l}</option>`).join('')}</select>
 <button class="avail-rm" onclick="rmSlot(${dow},${idx})">✕</button></div>`})}
-html+=`<button class="avail-add" onclick="addSlot(${dow})">+ Add Time Slot</button></div>`}
+html+=`<button class="avail-add" onclick="addSlot(${dow})">+ Add Time Slot</button><div class="copy-btns"><button class="btn btn-sm btn-s" onclick="copySlots(${dow},${dow}-1||6)">Copy from prev day</button><button class="btn btn-sm btn-s" onclick="copyWeek(${dow})">Copy to rest of week</button></div></div>`}
 el.innerHTML=html}
+
 function addSlot(dow){if(!coachAvail[dow])coachAvail[dow]=[];coachAvail[dow].push({from:'09:00',to:'12:00'});renderAvailability()}
 function rmSlot(dow,idx){if(coachAvail[dow])coachAvail[dow].splice(idx,1);renderAvailability()}
 function updateSlot(dow,idx,field,val){if(coachAvail[dow]&&coachAvail[dow][idx])coachAvail[dow][idx][field]=val}
+function copySlots(fromDow,toDow){if(coachAvail[fromDow]&&coachAvail[fromDow].length){coachAvail[toDow]=JSON.parse(JSON.stringify(coachAvail[fromDow]));renderAvailability();toast('Copied!')}}
+function copyWeek(startDow){for(let i=startDow+1;i<7;i++){if(coachAvail[startDow]&&coachAvail[startDow].length){coachAvail[i]=JSON.parse(JSON.stringify(coachAvail[startDow]))}}}
+
 async function saveAvailability(){try{await db.collection('coachAvailability').doc(CUR.uid).set({slots:coachAvail,updatedAt:TS()});const m=document.getElementById('availMsg');m.className='msg success vis';m.textContent='Availability saved!';setTimeout(()=>m.classList.remove('vis'),3000)}catch(e){const m=document.getElementById('availMsg');m.className='msg error vis';m.textContent='Error: '+e.message}}
 
 // ===== CLIENTS TAB =====
 function buildClientsTab(){const p=document.getElementById('panel-clients');if(!allClients.length){p.innerHTML='<div class="card"><div class="card-t">Your Clients</div><div class="empty"><div class="empty-icon">👥</div><div class="empty-text">No clients yet</div></div></div>';return}
-let h='<div class="card"><div class="card-t">Your Clients</div>';allClients.forEach(c=>{const prog=allProgress.filter(pr=>pr.clientId===c.id);const asgn=allSessions.filter(s=>s.assignedClients?.includes(c.id));const missed=asgn.length-prog.length;let bg='badge-g',bt='On Track';if(missed>=3){bg='badge-r';bt='Needs Attention'}else if(missed>=2){bg='badge-y';bt='Watch'}
-h+=`<div class="cl-row" onclick="showClientDetail('${c.id}')"><div><div class="cl-name">${c.name||'Unnamed'}</div><div class="cl-email">${c.email}</div></div><span class="badge ${bg}">${bt}</span></div>`});h+='</div><div id="clientDetailArea"></div>';p.innerHTML=h}
-async function showClientDetail(cid){const c=allClients.find(x=>x.id===cid);if(!c)return;const prog=allProgress.filter(pr=>pr.clientId===cid);const asgn=allSessions.filter(s=>s.assignedClients?.includes(cid));
-let progH=prog.length?prog.slice(0,5).map(pr=>`<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:13px"><div style="display:flex;justify-content:space-between"><strong>✓ ${pr.title}</strong><span class="badge badge-${pr.capacityLevel==='green'||pr.capacityLevel==='🟢'?'g':pr.capacityLevel==='yellow'||pr.capacityLevel==='🟡'?'y':'r'}">${pr.capacityLevel||'—'}</span></div><div style="font-size:11px;color:var(--txt3)">${pr.completedAt?.toDate?pr.completedAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div></div>`).join(''):'<span style="color:var(--txt3);font-size:13px">None yet</span>';
-document.getElementById('clientDetailArea').innerHTML=`<div class="card"><div class="card-t">${c.name||c.email} — Details</div><div class="client-detail">
-<div class="cd-section"><div class="cd-title">Progress (${prog.length}/${asgn.length})</div><div style="background:var(--bdr);border-radius:4px;height:8px;margin:8px 0"><div style="background:var(--ok);height:100%;border-radius:4px;width:${asgn.length?Math.round(prog.length/asgn.length*100):0}%"></div></div></div>
-<div class="cd-section"><div class="cd-title">Recent Completions</div>${progH}</div>
-<div class="cd-section"><div class="cd-title">Account Info</div><div style="font-size:13px;color:var(--txt2)">Email: ${c.email}<br>Joined: ${c.createdAt?.toDate?c.createdAt.toDate().toLocaleDateString():''}<br>Last Login: ${c.lastLoginTime?.toDate?timeAgo(c.lastLoginTime.toDate()):''}</div></div></div></div>`;
-document.getElementById('clientDetailArea').scrollIntoView({behavior:'smooth'})}
+let h='<div class="card"><div class="card-t">Your Clients</div>';allClients.forEach(c=>{const prog=allProgress.filter(pr=>pr.clientId===c.id);const asgn=allSessions.filter(s=>s.assignedClients?.includes(c.id));const missed=asgn.length-prog.length;let bg='badge-g',bt='On Track';if(missed>=3){bg='badge-r';bt='Needs Attention'}else if(missed>=2){bg='badge-y';bt='Watch'}\nh+=`<div class="cl-row" onclick="showClientDetail('${c.id}')\"><div><div class="cl-name">${c.name||'Unnamed'}</div><div class="cl-email">${c.email}</div></div><span class="badge ${bg}">${bt}</span></div>`});h+='</div><div id="clientDetailArea"></div>';p.innerHTML=h}\nasync function showClientDetail(cid){const c=allClients.find(x=>x.id===cid);if(!c)return;const prog=allProgress.filter(pr=>pr.clientId===cid);const asgn=allSessions.filter(s=>s.assignedClients?.includes(cid));\nlet progH=prog.length?prog.slice(0,5).map(pr=>`<div style="padding:6px 0;border-bottom:1px solid var(--bdr);font-size:13px"><div style="display:flex;justify-content:space-between"><strong>✓ ${pr.title}</strong><span class="badge badge-${pr.capacityLevel==='green'||pr.capacityLevel==='🟢'?'g':pr.capacityLevel==='yellow'||pr.capacityLevel==='🟡'?'y':'r'}">${pr.capacityLevel||'—'}</span></div><div style="font-size:11px;color:var(--txt3)">${pr.completedAt?.toDate?pr.completedAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):''}</div></div>`).join(''):'<span style="color:var(--txt3);font-size:13px">None yet</span>';\ndocument.getElementById('clientDetailArea').innerHTML=`<div class="card"><div class="card-t">${c.name||c.email} — Details</div><div class="client-detail"><div class="cd-section"><div class="cd-title">Progress (${prog.length}/${asgn.length})</div><div style="background:var(--bdr);border-radius:4px;height:8px;margin:8px 0"><div style="background:var(--ok);height:100%;border-radius:4px;width:${asgn.length?Math.round(prog.length/asgn.length*100):0}%"></div></div></div><div class="cd-section"><div class="cd-title">Recent Completions</div>${progH}</div><div class="cd-section"><div class="cd-title">Account Info</div><div style="font-size:13px;color:var(--txt2)">Email: ${c.email}<br>Joined: ${c.createdAt?.toDate?c.createdAt.toDate().toLocaleDateString():''}<br>Last Login: ${c.lastLoginTime?.toDate?timeAgo(c.lastLoginTime.toDate()):''}</div></div></div></div>`;document.getElementById('clientDetailArea').scrollIntoView({behavior:'smooth'})}
 
-// ===== WORKOUT BUILDER (NO DAY FIELD) =====
+// ===== WORKOUT BUILDER =====
 async function buildWorkoutCreator(){exercises=[{name:'',type:'General',sets:'',reps:'',weight:'',tempo:'',videoLink:''}];
 let co='<option value="">— Save to Library (assign later) —</option>';allClients.forEach(c=>{co+=`<option value="${c.id}">${c.name||c.email}</option>`});
 document.getElementById('panel-builder').innerHTML=`<div class="card"><div class="card-t">Create Workout Session</div><div class="wb-form">
@@ -318,7 +316,7 @@ async function dashMarkDone(){if(!todaySessData||!dashZone)return;if(!confirm('M
 try{await db.collection('clientProgress').add({clientId:CUR.uid,coachId:todaySessData.coachId,sessionId:todaySessData.id,title:todaySessData.title,exercises:todaySessData.exercises||[],capacityLevel:dashZone,completedAt:TS()});
 await db.collection('scheduledSessions').doc(todaySessData.id).update({isCompleted:true});toast('Workout completed! '+dashZone.toUpperCase()+' zone');buildClientDashboard()}catch(e){alert(e.message)}}
 
-// ===== CAPACITY CHECK-IN (DARK PREMIUM) =====
+// ===== CAPACITY CHECK-IN =====
 let capAnswers={sleep:0,soreness:0,emotional:0,focus:0,energy:0,trueCap:0};
 function buildCapacityTab(){const p=document.getElementById('panel-capacity');
 const qs=[{key:'sleep',label:'How well did you sleep last night?',low:'Barely slept',high:'Deep, restful'},{key:'soreness',label:'How sore is your body?',low:'Very sore',high:'Fresh'},{key:'emotional',label:'Emotional load right now?',low:'Overwhelmed',high:'Light, balanced'},{key:'energy',label:'Energy level?',low:'Exhausted',high:'High energy'},{key:'focus',label:'How focused do you feel?',low:'Scattered',high:'Locked in'},{key:'trueCap',label:'TRUE CAPACITY: Mind + Body aligned?',low:'Mind pushing, body resisting',high:'Fully aligned'}];
@@ -353,7 +351,7 @@ function selectPill(btn,multi){if(!multi){btn.parentElement.querySelectorAll('.p
 async function saveCapacity(zone){const selected=[];document.querySelectorAll('.pill.sel').forEach(p=>selected.push(p.textContent));
 try{await db.collection('capacityCheckins').doc(CUR.uid+'_'+todayStr()).update({selectedActivities:selected});toast('Capacity logged: '+zone.toUpperCase())}catch(e){console.error(e)}}
 
-// ===== TRACKER (WATER = OZ COUNTER) =====
+// ===== TRACKER =====
 let mealData=[0,0,0,0,0,0];let waterOz=0;
 function buildTrackerTab(){const p=document.getElementById('panel-tracker');
 const meals=['Meal 1','Meal 2','Meal 3','Meal 4','Meal 5','Meal 6'];
@@ -388,10 +386,9 @@ try{await db.collection('foodDiary').doc(CUR.uid+'_'+todayStr()).set({clientId:C
 // ===== GUIDES =====
 function buildGuidesTab(){document.getElementById('panel-guides').innerHTML=`<div class="card"><div class="card-t">SISS Method Guides</div><div id="guidesList"><div class="empty"><div class="empty-icon">📖</div><div class="empty-text">Guides coming soon</div></div></div></div>`}
 
-// ===== PROGRAMS TAB (PILL + COMPLETED SESSIONS) =====
+// ===== PROGRAMS TAB (FIX: only show if assigned) =====
 async function buildProgramsTab(){const p=document.getElementById('panel-programs');
-try{const snap=await db.collection('scheduledSessions').where('assignedClients','array-contains',CUR.uid).get();let assigned=[];snap.forEach(d=>{assigned.push({id:d.id,...d.data()})});
-// Get completions
+try{const snap=await db.collection('scheduledSessions').where('assignedClients','array-contains',CUR.uid).where('isPublished','==',true).get();let assigned=[];snap.forEach(d=>{assigned.push({id:d.id,...d.data()})});
 const progSnap=await db.collection('clientProgress').where('clientId','==',CUR.uid).get();let completions={};progSnap.forEach(d=>{const pr=d.data();completions[pr.sessionId]={...pr,completedAt:pr.completedAt?.toDate?pr.completedAt.toDate():null}});
 
 if(!assigned.length){p.innerHTML='<div class="card"><div class="card-t">My Programs</div><div class="empty"><div class="empty-icon">🏋️</div><div class="empty-text">No programs assigned yet</div></div></div>';return}
@@ -405,10 +402,12 @@ ${comp?`<div style="font-size:12px;color:var(--txt2);margin-top:2px">Completed $
 <span class="${comp?'prog-sess-done':'prog-sess-pending'}">${comp?'Done':'Upcoming'}</span></div>`}).join('')}</div></div></div>`}catch(e){p.innerHTML='<div class="card"><div class="empty"><div class="empty-text">Error loading programs</div></div></div>'}}
 
 // ===== CLIENT SCHEDULE =====
-let schedView='daily';
+let schedView='daily';let COACH_ID=null;
 async function buildClientScheduleTab(){const p=document.getElementById('panel-schedule');
 p.innerHTML=`<div class="sched-view-toggle"><button class="sv-btn on" onclick="schedView='daily';this.parentElement.querySelectorAll('.sv-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on');renderClientSched()">Daily</button><button class="sv-btn" onclick="schedView='weekly';this.parentElement.querySelectorAll('.sv-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on');renderClientSched()">Weekly</button></div>
-<div id="schedContent"></div><button class="add-sched-btn" onclick="openBookModal()">+</button>`;renderClientSched()}
+<div id="schedContent"></div><button class="add-sched-btn" onclick="openBookModal()">+</button>`;
+try{const coaches=await db.collection('users').where('accountType','==','coach').get();if(!coaches.empty){COACH_ID=coaches.docs[0].id}}catch(e){}
+renderClientSched()}
 
 async function renderClientSched(){const el=document.getElementById('schedContent');const now=new Date();
 try{const bookSnap=await db.collection('bookedSlots').where('clientId','==',CUR.uid).get();let booked=[];bookSnap.forEach(d=>booked.push({id:d.id,...d.data()}));
@@ -428,9 +427,8 @@ if(dayBooks.length)dayBooks.forEach(b=>{h+=`<div class="day-card-session">📅 $
 else h+='<div style="font-size:12px;color:var(--txt3);padding:4px 0">—</div>';
 h+='</div>'}el.innerHTML=h}}catch(e){el.innerHTML='<div class="empty"><div class="empty-text">Error loading schedule</div></div>'}}
 
-async function openBookModal(){let avail={};
-try{const coaches=await db.collection('users').where('accountType','==','coach').get();let coachId=null;coaches.forEach(d=>coachId=d.id);
-if(coachId){const ad=await db.collection('coachAvailability').doc(coachId).get();if(ad.exists)avail=ad.data().slots||{}}}catch(e){}
+async function openBookModal(){if(!COACH_ID){alert('No coach available');return}
+let avail={};try{const ad=await db.collection('coachAvailability').doc(COACH_ID).get();if(ad.exists)avail=ad.data().slots||{};if(!Object.keys(avail).length){alert('Coach has no availability set yet');return}}catch(e){alert('Error loading coach availability')}
 let takenSlots=[];try{const bs=await db.collection('bookedSlots').get();bs.forEach(d=>takenSlots.push(d.data()))}catch(e){}
 let daysHtml='';const now=new Date();
 for(let i=1;i<=14;i++){const d=new Date(now);d.setDate(now.getDate()+i);const dow=d.getDay();
@@ -438,12 +436,12 @@ if(!avail[dow]||!avail[dow].length)continue;
 const dateStr=d.toISOString().split('T')[0];const dateLabel=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 let slotHtml='';
 avail[dow].forEach(slot=>{const from=slot.from,to=slot.to;TIMES.forEach(t=>{if(t.v>=from&&t.v<to){const taken=takenSlots.find(ts=>ts.date===dateStr&&ts.time===t.v);
-slotHtml+=`<button class="btn btn-sm ${taken?'btn-s':'btn-p'}" style="margin:3px;${taken?'opacity:.4;cursor:not-allowed':''}" ${taken?'disabled':''} onclick="bookSlot('${dateStr}','${t.v}','${t.l}','${dateLabel}')">${t.l}${taken?' ✕':''}</button>`}})});
+slotHtml+=`<button class="btn btn-sm ${taken?'btn-s':'btn-p'}" style="margin:3px;${taken?'opacity:.4;cursor:not-allowed':''}" ${taken?'disabled':''} onclick="bookSlot('${dateStr}','${t.v}','${t.l}','${dateLabel}')\">${t.l}${taken?' ✕':''}</button>`}})});
 if(slotHtml)daysHtml+=`<div style="margin-bottom:16px"><div style="font-weight:600;font-size:14px;color:var(--pri);margin-bottom:8px">${dateLabel}</div><div style="display:flex;flex-wrap:wrap">${slotHtml}</div></div>`}
 const modal=document.createElement('div');modal.className='modal-overlay';
 modal.innerHTML=`<div class="modal"><div class="modal-t"><span>Schedule a Session</span><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button></div>
 <div style="font-size:13px;color:var(--txt2);margin-bottom:16px">Select an available time slot. Your coach will assign your workout.</div>
-${daysHtml||'<div class="empty"><div class="empty-text">No available slots</div><div class="empty-sub">Your coach hasn\'t set their availability yet</div></div>'}
+${daysHtml||'<div class="empty"><div class="empty-text">No available slots</div><div class="empty-sub">Your coach hasn\\'t set their availability yet</div></div>'}
 </div>`;document.body.appendChild(modal)}
 
 async function bookSlot(date,time,timeDisplay,dateLabel){
