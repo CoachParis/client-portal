@@ -453,11 +453,11 @@ if(!Object.keys(avail).length){alert('No available times to book right now. Plea
 return db.collection('bookedSlots').get().then(function(bs){
 var takenSlots=[];bs.forEach(function(d){takenSlots.push(d.data())});
 var daysHtml='';var now=new Date();
-for(var i=1;i<=14;i++){var d=new Date(now);d.setDate(now.getDate()+i);var dow=d.getDay();
-if(!avail[dow]||!avail[dow].length)continue;
+for(var i=1;i<=14;i++){var d=new Date(now);d.setDate(now.getDate()+i);var dow=d.getDay();var dowStr=String(dow);
+if(!avail[dowStr]||!avail[dowStr].length)continue;
 var dateStr=d.toISOString().split('T')[0];var dateLabel=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 var slotHtml='';
-avail[dow].forEach(function(slot){var from=slot.from,to=slot.to;TIMES.forEach(function(t){if(t.v>=from&&t.v<to){var taken=takenSlots.find(function(ts){return ts.date===dateStr&&ts.time===t.v});
+avail[dowStr].forEach(function(slot){var from=slot.from,to=slot.to;TIMES.forEach(function(t){if(t.v>=from&&t.v<to){var taken=takenSlots.find(function(ts){return ts.date===dateStr&&ts.time===t.v});
 slotHtml+='<button class="btn btn-sm '+(taken?'btn-s':'btn-p')+'" style="margin:3px;'+(taken?'opacity:.4;cursor:not-allowed':'')+'" '+(taken?'disabled':'')+' onclick="bookSlot(\''+dateStr+'\',\''+t.v+'\',\''+t.l+'\',\''+dateLabel+'\')">'+t.l+(taken?' \u2715':'')+'</button>'}})});
 if(slotHtml)daysHtml+='<div style="margin-bottom:16px"><div style="font-weight:600;font-size:14px;color:var(--pri);margin-bottom:8px">'+dateLabel+'</div><div style="display:flex;flex-wrap:wrap">'+slotHtml+'</div></div>'}
 
