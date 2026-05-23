@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The SISS Client Portal&#8482;</title>
+<title>The SISS Client Portal™ V7.1</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -416,10 +416,10 @@ sessH+='<div class="prog-sess-item"><div><div style="font-weight:600;font-size:1
 p.innerHTML='<div class="card"><div class="card-t">My Programs</div><button class="prog-pill" onclick="document.getElementById(\'progDetail\').classList.toggle(\'hidden\')">\uD83C\uDFCB\uFE0F My Training Program <span style="font-size:12px;opacity:.8;margin-left:8px">'+done+'/'+assigned.length+' completed</span></button><div style="background:var(--bdr);border-radius:4px;height:6px;margin-bottom:16px"><div style="background:var(--ok);height:100%;border-radius:4px;width:'+pct+'%;transition:width .3s"></div></div><div id="progDetail"><div class="prog-sessions">'+sessH+'</div></div></div>'})}).catch(function(e){p.innerHTML='<div class="card"><div class="empty"><div class="empty-text">Error loading programs</div></div></div>'})}
 
 // ===== CLIENT SCHEDULE =====
-var COACH_ID=null;
+var COACH_ID='SiLBhpTMb5Q42FLceYTjlkXdl3p1';
 function buildClientScheduleTab(){var p=document.getElementById('panel-schedule');
 p.innerHTML='<div class="card"><div class="card-t">My Schedule</div><div id="clientSchedContent"><div class="empty"><div class="empty-text">Loading...</div></div></div></div><button class="add-sched-btn" onclick="openBookModal()">+</button>';
-db.collection('users').where('accountType','==','coach').get().then(function(snap){if(!snap.empty)COACH_ID=snap.docs[0].id;renderClientSched()}).catch(function(){renderClientSched()})}
+renderClientSched()}
 
 function renderClientSched(){var el=document.getElementById('clientSchedContent');if(!el)return;
 Promise.all([
@@ -440,10 +440,11 @@ if(sess){h+='<div class="slot-workout">\u2705 '+sess.title+' \u00B7 '+(sess.type
 h+='</div></div>'});
 el.innerHTML=h}).catch(function(e){el.innerHTML='<div class="empty"><div class="empty-text">Error loading schedule</div></div>'})}
 
-function openBookModal(){if(!COACH_ID){alert('No coach available');return}
+function openBookModal(){continueBooking()}
+function continueBooking(){
 db.collection('coachAvailability').doc(COACH_ID).get().then(function(ad){
 var avail=ad.exists?ad.data().slots||{}:{};
-if(!Object.keys(avail).length){alert('Coach has no availability set yet');return}
+if(!Object.keys(avail).length){alert('Coach has no availability set yet. Coach needs to go to Dashboard and save weekly availability.');return}
 return db.collection('bookedSlots').get().then(function(bs){
 var takenSlots=[];bs.forEach(function(d){takenSlots.push(d.data())});
 var daysHtml='';var now=new Date();
@@ -456,7 +457,7 @@ slotHtml+='<button class="btn btn-sm '+(taken?'btn-s':'btn-p')+'" style="margin:
 if(slotHtml)daysHtml+='<div style="margin-bottom:16px"><div style="font-weight:600;font-size:14px;color:var(--pri);margin-bottom:8px">'+dateLabel+'</div><div style="display:flex;flex-wrap:wrap">'+slotHtml+'</div></div>'}
 
 var modal=document.createElement('div');modal.className='modal-overlay';
-modal.innerHTML='<div class="modal"><div class="modal-t"><span>Schedule a Session</span><button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">\u2715</button></div><div style="font-size:13px;color:var(--txt2);margin-bottom:16px">Select an available time slot. Your coach will assign your workout.</div>'+(daysHtml||'<div class="empty"><div class="empty-text">No available slots</div><div class="empty-sub">Coach has not set availability yet</div></div>')+'</div>';
+modal.innerHTML='<div class="modal"><div class="modal-t"><span>Schedule a Session</span><button class="modal-close" onclick="this.closest(\'.modal-overlay\').remove()">✕</button></div><div style="font-size:13px;color:var(--txt2);margin-bottom:16px">Select an available time slot. Your coach will assign your workout.</div>'+(daysHtml||'<div class="empty"><div class="empty-text">No available slots</div><div class="empty-sub">Coach has not set availability yet</div></div>')+'</div>';
 document.body.appendChild(modal)})}).catch(function(e){alert('Error loading availability')})}
 
 function bookSlot(date,time,timeDisplay,dateLabel){
